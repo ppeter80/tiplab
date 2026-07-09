@@ -29,6 +29,9 @@
 .placed{font-size:.86rem;background:rgba(61,123,255,.08);border:1px solid rgba(61,123,255,.25);border-radius:8px;padding:8px 10px;color:#bcd0f5}
 .placed.win{background:rgba(22,217,137,.1);border-color:rgba(22,217,137,.3);color:var(--acc)}
 .placed.lose{background:rgba(255,106,91,.1);border-color:rgba(255,106,91,.3);color:var(--red)}
+tbody tr.me{background:rgba(22,217,137,.09)}
+tbody tr.me td{border-bottom-color:rgba(22,217,137,.28)}
+tbody tr.me b{color:var(--acc)}
 </style>
 </head>
 <body>
@@ -46,8 +49,9 @@
 
   <section class="card">
     <h2>🏆 Rebríček</h2>
-    <div class="vs" id="vs"></div>
-    <p class="sub" id="standing" style="text-align:center;margin:12px 0 0"></p>
+    <p class="sub" id="standing" style="margin:0 0 10px"></p>
+    <div id="board"></div>
+    <p class="sub" style="margin:10px 0 0">Súperi 🤖⭐🎯🎲🔥 sú AI-hráči s rôznymi stratégiami. Reálni hráči medzi sebou pribudnú po spustení prihlásenia.</p>
   </section>
 
   <section class="card">
@@ -79,29 +83,37 @@ const pct = n => (Math.round(n*10)/10).toLocaleString('sk-SK',{minimumFractionDi
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||{bets:{}}}catch(e){return {bets:{}}}}
 function save(g){localStorage.setItem(KEY,JSON.stringify(g))}
 let G=load(); if(!G.bets)G.bets={};
+function hash(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h;}
 
-function userPL(){let pl=0,open=0,ss=0;
-  TIPS.forEach(t=>{const b=G.bets[t.id]; if(!b)return;
-    if(t.vysledok==='won'){pl+=b.stake*(t.kurz-1);ss+=b.stake;}
-    else if(t.vysledok==='lost'){pl-=b.stake;ss+=b.stake;}
+// stakeOf(tip) -> koľko hráč vsadil na tip (0 = nevsadil)
+function statsFor(stakeOf){let pl=0,open=0,ss=0,w=0,l=0,bets=0;
+  TIPS.forEach(t=>{const s=stakeOf(t); if(!s)return; bets++;
+    if(t.vysledok==='won'){pl+=s*(t.kurz-1);ss+=s;w++;}
+    else if(t.vysledok==='lost'){pl-=s;ss+=s;l++;}
     else if(t.vysledok==='void'){}
-    else open+=b.stake;
+    else open+=s;
   });
-  return {pl,open,bankroll:START+pl,avail:START+pl-open,roi:ss>0?pl/ss*100:null};
+  return {pl,open,ss,w,l,bets,bankroll:START+pl,avail:START+pl-open,roi:ss>0?pl/ss*100:null};
 }
-function aiPL(){let pl=0,open=0,ss=0;
-  TIPS.forEach(t=>{
-    if(t.vysledok==='won'){pl+=AISTK*(t.kurz-1);ss+=AISTK;}
-    else if(t.vysledok==='lost'){pl-=AISTK;ss+=AISTK;}
-    else if(t.vysledok==='void'){}
-    else open+=AISTK;
-  });
-  return {pl,open,bankroll:START+pl,roi:ss>0?pl/ss*100:null};
+const userStake = t => G.bets[t.id]?G.bets[t.id].stake:0;
+// AI-hráči s rôznymi stratégiami (deterministické)
+const BOTS=[
+  {n:'TipLab AI',i:'🤖',ai:true,f:()=>AISTK},
+  {n:'Value Val',i:'🎯',f:t=>t.kurz>=1.80?AISTK:0},
+  {n:'Favorit Fero',i:'⭐',f:t=>t.kurz<=1.70?AISTK:0},
+  {n:'Náhodný Náno',i:'🎲',f:t=>hash(t.id)%2===0?AISTK:0},
+  {n:'Riskový Rišo',i:'🔥',f:t=>t.kurz>=1.90?200:0},
+];
+function players(){
+  const list=[{n:'TY',i:'🙂',me:true,st:statsFor(userStake)}];
+  BOTS.forEach(b=>list.push({n:b.n,i:b.i,ai:b.ai,st:statsFor(b.f)}));
+  list.sort((a,b)=> b.st.bankroll-a.st.bankroll || (b.st.roi==null?-1e9:b.st.roi)-(a.st.roi==null?-1e9:a.st.roi) || a.n.localeCompare(b.n));
+  return list;
 }
 function placeBet(id){
   const t=TIPS.find(x=>x.id===id); if(!t||t.vysledok!=='pending')return;
   const inp=document.getElementById('stake-'+id); const stake=Math.floor(+inp.value||0);
-  const u=userPL();
+  const u=statsFor(userStake);
   if(stake<1){alert('Zadaj stávku aspoň 1 kredit.');return;}
   if(stake>u.avail){alert('Nemáš dosť voľných kreditov. Voľné: '+eur(u.avail));return;}
   G.bets[id]={stake, kurz:t.kurz}; save(G); render();
@@ -109,15 +121,19 @@ function placeBet(id){
 function resetGame(){ if(!confirm('Vynulovať hru a začať znova s 1000 kreditmi?'))return; G={bets:{}}; save(G); render(); }
 
 function render(){
-  const u=userPL(), a=aiPL();
-  const uLead=u.bankroll>=a.bankroll;
-  document.getElementById('vs').innerHTML=
-    `<div class="side${uLead?' lead':''}">${uLead?'<span class="crown">👑</span>':''}<div class="who">🙂 TY</div><div class="bank">${eur(u.bankroll)}</div><div class="roi ${u.pl>=0?'pos':'neg'}">${u.roi==null?'ROI —':'ROI '+(u.pl>=0?'+':'')+pct(u.roi)}</div></div>`+
-    `<div class="mid">vs</div>`+
-    `<div class="side${!uLead?' lead':''}">${!uLead?'<span class="crown">👑</span>':''}<div class="who">🤖 TipLab AI</div><div class="bank">${eur(a.bankroll)}</div><div class="roi ${a.pl>=0?'pos':'neg'}">${a.roi==null?'ROI —':'ROI '+(a.pl>=0?'+':'')+pct(a.roi)}</div></div>`;
-  const diff=Math.abs(u.bankroll-a.bankroll);
-  document.getElementById('standing').innerHTML = diff===0 ? 'Zatiaľ nerozhodne — všetko sa ešte len začína.' :
-    (uLead? `Vedieš o <b>${eur(diff)}</b> kreditov proti AI! 🎉` : `AI je o <b>${eur(diff)}</b> kreditov pred tebou. Zaútoč! 🤖`);
+  const P=players(), u=statsFor(userStake);
+  const rows=P.map((p,i)=>{
+    const rec=(p.st.w+p.st.l)>0?p.st.w+'-'+p.st.l:'—';
+    const roi=p.st.roi==null?'—':(p.st.pl>=0?'+':'')+pct(p.st.roi);
+    const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
+    return `<tr class="${p.me?'me':''}"><td class="r" style="width:30px">${medal}</td>`+
+      `<td>${p.i} <b>${p.n}</b>${p.ai?'<span class="tbadge" style="margin-left:4px">AI</span>':''}<br><span class="sub">${p.st.bets} stávok · ${rec}</span></td>`+
+      `<td class="r"><b>${eur(p.st.bankroll)}</b><br><span class="sub ${p.st.pl>=0?'pos':'neg'}">${roi}</span></td></tr>`;
+  }).join('');
+  document.getElementById('board').innerHTML=`<div class="tablewrap"><table><thead><tr><th></th><th>Hráč</th><th class="r">Bankroll · ROI</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  const me=P.find(p=>p.me), ai=P.find(p=>p.ai), rank=P.indexOf(me)+1, d=me.st.bankroll-ai.st.bankroll;
+  document.getElementById('standing').innerHTML = `Si na <b>${rank}. mieste</b> zo ${P.length}. `+
+    (d>0?`Vedieš o <b>${eur(d)}</b> nad TipLab AI 🎉`:d<0?`TipLab AI je o <b>${eur(-d)}</b> pred tebou 🤖`:`Držíš krok s TipLab AI.`);
 
   const ico=t=>t.sport==='tenis'?'🎾':'⚽';
   document.getElementById('bets').innerHTML = TIPS.map(t=>{
