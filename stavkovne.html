@@ -43,20 +43,24 @@
 
 <script>
 document.getElementById('yr').textContent=new Date().getFullYear();
-// Licencované SK stávkovne (ÚRHH). affiliate = má partnerský program (podľa researchu). link doplníme po registrácii.
+// Licencované SK stávkovne (ÚRHH). c=značková farba, r=hodnotenie (editorské), aff=partnerský program. Odkaz doplníme po registrácii.
 const BOOKS=[
- {n:'Tipsport',i:'T',d:'Najširšia ponuka, LIVE prenosy, silná appka. Najviac stávkarov na SK.',aff:true},
- {n:'Fortuna',i:'F',d:'Tradičná značka, BetBuilder, Cash Out, Fortuna TV. Časté akcie.',aff:true},
- {n:'Niké',i:'N',d:'Slovenská klasika, prehľadné rozhranie, pravidelné bonusy.',aff:true},
- {n:'DOXXbet',i:'D',d:'Originálne funkcie, dobré kurzy, bonusy pre nových hráčov.',aff:true},
- {n:'SynotTip',i:'S',d:'Silná kurzová ponuka, časté akcie o voľné tikety.',aff:true},
- {n:'eTIPOS',i:'e',d:'Prevádzkovaná národnou lotériou TIPOS, plná licencia.',aff:false},
- {n:'MonacoBet',i:'M',d:'Menšia licencovaná stávkovňa s casino ponukou.',aff:false},
+ {n:'Tipsport',i:'T',c:'#0e5fbd',r:4.7,bonus:'Vstupný bonus',d:'Najširšia ponuka, LIVE prenosy, silná appka. Najviac stávkarov na SK.',aff:true},
+ {n:'Fortuna',i:'F',c:'#e11d2a',r:4.4,bonus:'Stávka bez rizika',d:'Tradičná značka, BetBuilder, Cash Out, Fortuna TV. Časté akcie.',aff:true},
+ {n:'Niké',i:'N',c:'#0b3fb0',r:4.3,bonus:'Vstupný bonus',d:'Slovenská klasika, prehľadné rozhranie, pravidelné bonusy.',aff:true},
+ {n:'DOXXbet',i:'D',c:'#e8501e',r:4.2,bonus:'Bonus bez vkladu',d:'Originálne funkcie, dobré kurzy, bonusy pre nových hráčov.',aff:true},
+ {n:'SynotTip',i:'S',c:'#12a150',r:4.1,bonus:'Voľné tikety',d:'Silná kurzová ponuka, časté akcie o voľné tikety.',aff:true},
+ {n:'eTIPOS',i:'e',c:'#00843d',r:3.9,bonus:'',d:'Prevádzkovaná národnou lotériou TIPOS, plná licencia.',aff:false},
+ {n:'MonacoBet',i:'M',c:'#b8912f',r:3.6,bonus:'',d:'Menšia licencovaná stávkovňa s casino ponukou.',aff:false},
 ];
 document.getElementById('books').innerHTML = BOOKS.map(b=>
-  `<div class="book"><div class="bi">${b.i}</div>`+
-  `<div class="bd"><b>${b.n}${b.aff?'<span class="tag">partnerský program</span>':''}</b><span>${b.d}</span></div>`+
-  `<div class="ba"><a class="btn" href="#" onclick="return false" title="Affiliate odkaz doplníme po registrácii">Navštíviť</a></div></div>`
+  `<div class="book">`+
+  `<div class="bi" style="background:${b.c}">${b.i}</div>`+
+  `<div class="bd"><b>${b.n}${b.aff?'<span class="tag">partner</span>':''}</b>`+
+  `<span class="stars">★ ${b.r.toFixed(1)}<span class="rate">/5</span></span>`+
+  `<span class="desc">${b.d}</span></div>`+
+  `<div class="ba">${b.bonus?`<span class="bonus">🎁 ${b.bonus}</span>`:''}<a class="btn acc" href="#" onclick="return false" title="Affiliate odkaz doplníme po registrácii">Navštíviť</a></div>`+
+  `</div>`
 ).join('');
 </script>
 <script src="site.js"></script>
