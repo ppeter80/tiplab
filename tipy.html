@@ -48,9 +48,9 @@
   © <span id="yr"></span> TipLab · tiplab.sk
 </div></footer>
 
+<script src="tips-data.js"></script>
 <script src="tips.js"></script>
 <script>
-document.getElementById('yr').textContent=new Date().getFullYear();
 let filter='all';
 function draw(){
   const t = filter==='all' ? TIPS : TIPS.filter(x=>x.sport===filter);

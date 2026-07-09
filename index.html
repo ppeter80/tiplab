@@ -28,6 +28,7 @@
     <h2>📊 Náš tip-tracker</h2>
     <p class="sub">Bežiace štatistiky všetkých tipov. Yield = zisk / celkovo vsadené (v jednotkách).</p>
     <div class="trkstat" id="home-stats"></div>
+    <p class="sub" id="home-pending" style="text-align:center;margin:0 0 12px"></p>
     <a class="btn acc full" href="tipy.html">Pozri všetky tipy →</a>
   </section>
 
@@ -68,10 +69,12 @@
   © <span id="yr"></span> TipLab · tiplab.sk
 </div></footer>
 
+<script src="tips-data.js"></script>
 <script src="tips.js"></script>
 <script>
-document.getElementById('yr').textContent=new Date().getFullYear();
 renderTrackerStats('home-stats', TIPS);
+var _pc=tipPending(TIPS);
+if(_pc>0) document.getElementById('home-pending').innerHTML='⏳ <b>'+_pc+'</b> aktívne tipy čakajú na výsledok';
 </script>
 <script src="site.js"></script>
 </body>

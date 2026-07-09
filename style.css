@@ -90,6 +90,18 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
 .filters button{background:var(--card2);border:1px solid var(--line);color:var(--mut);border-radius:20px;padding:6px 14px;font-size:.82rem;font-weight:600;cursor:pointer;transition:.15s}
 .filters button.on{background:var(--acc);border-color:var(--acc);color:#04160e}
 
+/* tip karty */
+.tip{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:13px 14px;margin-bottom:10px}
+.tip-h{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:6px}
+.tip-m{font-weight:700;font-size:.95rem;line-height:1.3}
+.tip-t{font-size:.92rem;margin-bottom:6px}
+.tip-k{color:var(--acc);font-weight:800;font-variant-numeric:tabular-nums;margin-left:4px}
+.tip-a{color:var(--mut);font-size:.84rem;line-height:1.55}
+.tbadge{font-size:.66rem;font-weight:800;padding:4px 10px;border-radius:20px;white-space:nowrap;background:rgba(255,255,255,.06);color:var(--mut)}
+.tbadge.win{background:rgba(22,217,137,.16);color:var(--acc)}
+.tbadge.lose{background:rgba(255,106,91,.14);color:var(--red)}
+.tbadge.pend{background:rgba(245,196,81,.14);color:var(--gold)}
+
 /* badges */
 .badge{display:inline-block;font-size:.64rem;font-weight:800;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px;vertical-align:middle}
 .badge.green{background:rgba(22,217,137,.16);color:var(--acc)}
