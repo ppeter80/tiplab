@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta name="description" content="Verejný tip-tracker TipLab — všetky športové tipy vrátane výsledkov a bežiaceho ROI / yield. Transparentne, aj s prehrami.">
+<title>Tipy — verejný tracker s ROI | TipLab</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site"><div class="hwrap">
+  <a class="logo" href="index.html">🧪 Tip<span class="lab">Lab</span></a>
+  <nav class="main"><a href="index.html">Domov</a><a href="tipy.html" class="on">Tipy</a><a href="nastroje.html">Nástroje</a><a href="stavkovne.html">Stávkovne</a></nav>
+  <span class="hbadge">18+</span>
+</div></header>
+
+<main>
+  <section class="hero">
+    <h1>Verejný <span class="g">tip-tracker</span></h1>
+    <p class="lead">Každý tip, ktorý dáme, tu ostane — aj keď prehrá. Bez mazania, bez vyberania si len výhier. Toto je náš reálny track record.</p>
+  </section>
+
+  <section class="card">
+    <div class="trkstat" id="stats"></div>
+    <div class="filters" id="filters">
+      <button data-f="all" class="on">Všetko</button>
+      <button data-f="futbal">⚽ Futbal</button>
+      <button data-f="tenis">🎾 Tenis</button>
+    </div>
+    <div id="table"></div>
+  </section>
+
+  <section class="card">
+    <h2>Ako to čítať</h2>
+    <div class="stat"><span><b>Yield</b> (výnosnosť)</span><b>zisk / celkovo vsadené · najdôležitejší ukazovateľ</b></div>
+    <div class="stat"><span><b>Úspešnosť</b></span><b>% vyhraných tipov (nestačí sama o sebe — dôležitý je kurz)</b></div>
+    <div class="stat"><span><b>Jednotka</b></span><b>1 jednotka = základná stávka; hodnoty sú v jednotkách, nie v €</b></div>
+    <p class="sub" style="margin-top:12px">Prečo jednotky a nie eurá? Aby bol track record férový bez ohľadu na to, koľko kto stavia. Value tipy majú zmysel dlhodobo — jeden týždeň nič nedokazuje.</p>
+  </section>
+</main>
+
+<footer class="site"><div class="fwrap">
+  <div class="rg">Hazard je zábava, nie zdroj príjmu. Hrať môžu len osoby <b>18+</b>. Stávkovanie nesie riziko straty. Ak cítiš problém: <a href="https://www.somazjeden.sk" target="_blank" rel="noopener">pomoc pri závislosti</a>.</div>
+  <nav><a href="index.html">Domov</a><a href="tipy.html">Tipy</a><a href="nastroje.html">Nástroje</a><a href="stavkovne.html">Stávkovne</a></nav>
+  © <span id="yr"></span> TipLab · tiplab.sk
+</div></footer>
+
+<script src="tips.js"></script>
+<script>
+document.getElementById('yr').textContent=new Date().getFullYear();
+let filter='all';
+function draw(){
+  const t = filter==='all' ? TIPS : TIPS.filter(x=>x.sport===filter);
+  renderTrackerStats('stats', t);
+  renderTrackerTable('table', t);
+}
+document.getElementById('filters').addEventListener('click',e=>{
+  if(e.target.tagName!=='BUTTON') return;
+  filter=e.target.dataset.f;
+  [...document.querySelectorAll('#filters button')].forEach(b=>b.classList.toggle('on',b===e.target));
+  draw();
+});
+draw();
+</script>
+</body>
+</html>

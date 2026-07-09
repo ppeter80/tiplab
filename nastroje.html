@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta name="description" content="Bezplatné nástroje pre stávkarov: value/EV kalkulačka, staking (Kelly), surebet/arbitráž, akumulátor a prevodník kurzov. Priamo v prehliadači.">
+<title>Nástroje pre stávkarov — value, Kelly, surebet | TipLab</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site"><div class="hwrap">
+  <a class="logo" href="index.html">🧪 Tip<span class="lab">Lab</span></a>
+  <nav class="main"><a href="index.html">Domov</a><a href="tipy.html">Tipy</a><a href="nastroje.html" class="on">Nástroje</a><a href="stavkovne.html">Stávkovne</a></nav>
+  <span class="hbadge">18+</span>
+</div></header>
+
+<main>
+  <section class="hero">
+    <h1>Nástroje pre <span class="g">stávkarov</span></h1>
+    <p class="lead">Rátaj value, správnu výšku stávky, arbitráž aj akumulátor. Všetko zadarmo, priamo v prehliadači — nič sa nikam neposiela.</p>
+  </section>
+
+  <!-- Value / EV -->
+  <section class="card" id="value">
+    <h2>🧮 Value / EV kalkulačka</h2>
+    <p class="sub">Má stávka hodnotu? Porovná tvoj odhad pravdepodobnosti s kurzom.</p>
+    <div class="row">
+      <div><label>Tvoja pravdepodobnosť (%)</label><input id="v_p" type="number" step="0.1" min="0" max="100" value="55" inputmode="decimal"></div>
+      <div><label>Kurz (desatinný)</label><input id="v_o" type="number" step="0.01" min="1.01" value="2.00" inputmode="decimal"></div>
+    </div>
+    <label>Bankroll (€)</label><input id="v_bank" type="number" step="1" min="0" value="100" inputmode="decimal">
+    <div id="v_out" style="margin-top:14px"></div>
+    <div id="v_verd" class="verdict"></div>
+  </section>
+
+  <!-- Staking / Kelly -->
+  <section class="card" id="staking">
+    <h2>📐 Staking / Kelly</h2>
+    <p class="sub">Koľko staviť? Kellyho kritérium podľa tvojho edge a bankrollu.</p>
+    <div class="row">
+      <div><label>Bankroll (€)</label><input id="s_bank" type="number" step="1" min="0" value="1000" inputmode="decimal"></div>
+      <div><label>Kurz</label><input id="s_o" type="number" step="0.01" min="1.01" value="2.00" inputmode="decimal"></div>
+    </div>
+    <div class="row">
+      <div><label>Tvoja pravdepodobnosť (%)</label><input id="s_p" type="number" step="0.1" min="0" max="100" value="55" inputmode="decimal"></div>
+      <div><label>Zlomok Kelly</label><select id="s_frac"><option value="1">Plný Kelly</option><option value="0.5" selected>½ Kelly (odporúčané)</option><option value="0.25">¼ Kelly</option></select></div>
+    </div>
+    <div id="s_out" style="margin-top:14px"></div>
+  </section>
+
+  <!-- Surebet -->
+  <section class="card" id="surebet">
+    <h2>♻️ Surebet / arbitráž</h2>
+    <p class="sub">Dva opačné výsledky u dvoch stávkovní — je možný bezrizikový zisk?</p>
+    <div class="row">
+      <div><label>Kurz na výsledok A</label><input id="a_a" type="number" step="0.01" min="1.01" value="2.10" inputmode="decimal"></div>
+      <div><label>Kurz na výsledok B</label><input id="a_b" type="number" step="0.01" min="1.01" value="2.05" inputmode="decimal"></div>
+    </div>
+    <label>Celková stávka (€)</label><input id="a_total" type="number" step="1" min="0" value="100" inputmode="decimal">
+    <div id="a_out" style="margin-top:14px"></div>
+  </section>
+
+  <!-- AKU -->
+  <section class="card" id="aku">
+    <h2>🎯 AKU (akumulátor)</h2>
+    <p class="sub">Kurzy oddelené čiarkou → celkový kurz a výplata.</p>
+    <label>Kurzy (napr. 1.8, 2.1, 1.5)</label><input id="k_odds" type="text" value="1.8, 2.1, 1.5" inputmode="decimal">
+    <label>Stávka (€)</label><input id="k_stake" type="number" step="1" min="0" value="10" inputmode="decimal">
+    <div id="k_out" style="margin-top:14px"></div>
+  </section>
+
+  <!-- Prevodník -->
+  <section class="card" id="prevodnik">
+    <h2>🔁 Prevodník kurzov</h2>
+    <p class="sub">Desatinný → zlomkový, americký, implikovaná pravdepodobnosť.</p>
+    <label>Desatinný kurz</label><input id="c_o" type="number" step="0.01" min="1.01" value="2.50" inputmode="decimal">
+    <div id="c_out" style="margin-top:14px"></div>
+  </section>
+</main>
+
+<footer class="site"><div class="fwrap">
+  <div class="rg">Hazard je zábava, nie zdroj príjmu. Hrať môžu len osoby <b>18+</b>. Stávkovanie nesie riziko straty. Ak cítiš problém: <a href="https://www.somazjeden.sk" target="_blank" rel="noopener">pomoc pri závislosti</a>.</div>
+  <nav><a href="index.html">Domov</a><a href="tipy.html">Tipy</a><a href="nastroje.html">Nástroje</a><a href="stavkovne.html">Stávkovne</a></nav>
+  © <span id="yr"></span> TipLab · tiplab.sk
+</div></footer>
+
+<script src="tools.js"></script>
+<script>document.getElementById('yr').textContent=new Date().getFullYear();initTools();</script>
+</body>
+</html>

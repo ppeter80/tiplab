@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta name="description" content="Prehľad legálnych slovenských stávkovní s licenciou ÚRHH — Tipsport, Fortuna, Niké, DOXXbet, SynotTip a ďalšie. Na čo sa hodia a aké majú bonusy.">
+<title>Legálne slovenské stávkovne (licencia ÚRHH) | TipLab</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site"><div class="hwrap">
+  <a class="logo" href="index.html">🧪 Tip<span class="lab">Lab</span></a>
+  <nav class="main"><a href="index.html">Domov</a><a href="tipy.html">Tipy</a><a href="nastroje.html">Nástroje</a><a href="stavkovne.html" class="on">Stávkovne</a></nav>
+  <span class="hbadge">18+</span>
+</div></header>
+
+<main>
+  <section class="hero">
+    <h1>Legálne <span class="g">slovenské stávkovne</span></h1>
+    <p class="lead">Len prevádzkovatelia s platnou licenciou od <b>Úradu pre reguláciu hazardných hier (ÚRHH)</b>. Žiadne nelegálne zahraničné stránky.</p>
+  </section>
+
+  <section class="card">
+    <div class="verdict info" style="display:block;margin-top:0">ℹ️ Aktuálne bonusy a podmienky si vždy over priamo u stávkovne — menia sa. Registrovať sa dá len s dokladom, 18+.</div>
+    <div id="books"></div>
+  </section>
+
+  <section class="card">
+    <h2>Prečo staviť u viacerých</h2>
+    <p class="sub" style="margin-bottom:6px">Každá stávkovňa dáva na ten istý zápas iný kurz. Ak máš účet u 2–3, môžeš pri každom tipe vziať <b>najlepší kurz</b> — a to sa dlhodobo poriadne nasčíta. (Práve na to slúži náš porovnávač kurzov pri tipoch.)</p>
+  </section>
+</main>
+
+<footer class="site"><div class="fwrap">
+  <div class="rg">Hazard je zábava, nie zdroj príjmu. Hrať môžu len osoby <b>18+</b>. Stávkovanie nesie riziko straty. Ak cítiš problém: <a href="https://www.somazjeden.sk" target="_blank" rel="noopener">pomoc pri závislosti</a>.</div>
+  <nav><a href="index.html">Domov</a><a href="tipy.html">Tipy</a><a href="nastroje.html">Nástroje</a><a href="stavkovne.html">Stávkovne</a></nav>
+  Odkazy na stávkovne budú affiliate — ak sa cez ne zaregistruješ, môžeme dostať províziu (bez vplyvu na cenu pre teba). Odporúčame len licencované značky.<br>
+  © <span id="yr"></span> TipLab · tiplab.sk
+</div></footer>
+
+<script>
+document.getElementById('yr').textContent=new Date().getFullYear();
+// Licencované SK stávkovne (ÚRHH). affiliate = má partnerský program (podľa researchu). link doplníme po registrácii.
+const BOOKS=[
+ {n:'Tipsport',i:'T',d:'Najširšia ponuka, LIVE prenosy, silná appka. Najviac stávkarov na SK.',aff:true},
+ {n:'Fortuna',i:'F',d:'Tradičná značka, BetBuilder, Cash Out, Fortuna TV. Časté akcie.',aff:true},
+ {n:'Niké',i:'N',d:'Slovenská klasika, prehľadné rozhranie, pravidelné bonusy.',aff:true},
+ {n:'DOXXbet',i:'D',d:'Originálne funkcie, dobré kurzy, bonusy pre nových hráčov.',aff:true},
+ {n:'SynotTip',i:'S',d:'Silná kurzová ponuka, časté akcie o voľné tikety.',aff:true},
+ {n:'eTIPOS',i:'e',d:'Prevádzkovaná národnou lotériou TIPOS, plná licencia.',aff:false},
+ {n:'MonacoBet',i:'M',d:'Menšia licencovaná stávkovňa s casino ponukou.',aff:false},
+];
+document.getElementById('books').innerHTML = BOOKS.map(b=>
+  `<div class="book"><div class="bi">${b.i}</div>`+
+  `<div class="bd"><b>${b.n}${b.aff?'<span class="tag">partnerský program</span>':''}</b><span>${b.d}</span></div>`+
+  `<div class="ba"><a class="btn" href="#" onclick="return false" title="Affiliate odkaz doplníme po registrácii">Navštíviť</a></div></div>`
+).join('');
+</script>
+</body>
+</html>
