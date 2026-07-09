@@ -1,0 +1,160 @@
+<!-- TipLab — dátami podložené, transparentné tipy (MVP štart) -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta name="description" content="TipLab — dátami podložené športové tipy. Každý tip verejne, s reálnym ROI. Value kalkulačka a nástroje pre stávkarov.">
+<title>TipLab — dátami podložené tipy s reálnym ROI</title>
+<style>
+:root{--bg:#0a0d12;--card:#131820;--line:#232b38;--txt:#e8ecf3;--mut:#8b93a6;--acc:#19c37d;--acc2:#3b82f6;--red:#e0715f;--gold:#e6c86a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;font-size:15px;line-height:1.5}
+a{color:var(--acc2);text-decoration:none}
+header{padding:14px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(10,13,18,.9);backdrop-filter:blur(8px);z-index:5;display:flex;align-items:center;gap:8px}
+.logo{font-size:1.15rem;font-weight:800;letter-spacing:-.5px}
+.logo .lab{color:var(--acc)}
+.badge{margin-left:auto;font-size:.62rem;color:var(--mut);border:1px solid var(--line);padding:3px 7px;border-radius:20px;font-weight:600}
+main{max-width:760px;margin:0 auto;padding:16px}
+.hero{padding:26px 4px 10px}
+.hero h1{font-size:1.7rem;margin:0 0 8px;line-height:1.2;letter-spacing:-.5px}
+.hero h1 .g{color:var(--acc)}
+.hero p{color:var(--mut);font-size:1rem;margin:0 0 14px;max-width:560px}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.pill{font-size:.72rem;color:var(--txt);background:var(--card);border:1px solid var(--line);padding:5px 10px;border-radius:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:14px 0}
+h2{font-size:1.15rem;margin:0 0 4px}
+.sub{color:var(--mut);font-size:.85rem;margin:0 0 12px}
+label{display:block;font-size:.78rem;color:var(--mut);margin:10px 0 4px}
+input,select{width:100%;background:#0e131b;border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:11px;font-size:.95rem;font-family:inherit}
+.row{display:flex;gap:10px;align-items:flex-end}.row>*{flex:1;min-width:0}
+.stat{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+.stat:last-child{border-bottom:none}
+.stat b{font-variant-numeric:tabular-nums}
+.big{font-size:1.15rem;font-weight:800}
+.pos{color:var(--acc)}.neg{color:var(--red)}
+.verdict{margin-top:12px;padding:11px 13px;border-radius:10px;font-size:.9rem;font-weight:600;display:none}
+.verdict.ok{display:block;background:rgba(25,195,125,.12);border:1px solid rgba(25,195,125,.35);color:var(--acc)}
+.verdict.no{display:block;background:rgba(224,113,95,.12);border:1px solid rgba(224,113,95,.35);color:var(--red)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{color:var(--mut);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px}
+.r{text-align:right;font-variant-numeric:tabular-nums}
+.trkstat{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.trkstat .box{flex:1;min-width:120px;background:#0e131b;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.trkstat .box .k{font-size:.68rem;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+.trkstat .box .v{font-size:1.25rem;font-weight:800;font-variant-numeric:tabular-nums}
+.empty{color:var(--mut);text-align:center;padding:22px 10px;font-size:.9rem}
+.why{display:grid;grid-template-columns:1fr;gap:10px}
+.why .w{background:#0e131b;border:1px solid var(--line);border-radius:10px;padding:12px}
+.why .w b{display:block;margin-bottom:3px}
+footer{border-top:1px solid var(--line);margin-top:20px;padding:18px 16px 40px;color:var(--mut);font-size:.78rem;text-align:center}
+footer .rg{background:rgba(224,113,95,.08);border:1px solid rgba(224,113,95,.25);border-radius:10px;padding:10px;margin-bottom:12px;color:#d9a89f}
+@media(min-width:560px){.why{grid-template-columns:1fr 1fr 1fr}.hero h1{font-size:2rem}}
+</style>
+
+<header>
+  <span class="logo">🧪 Tip<span class="lab">Lab</span></span>
+  <span class="badge">18+ · dátové tipy</span>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Dátami podložené tipy. <span class="g">Každý verejne, s reálnym ROI.</span></h1>
+    <p>Žiadne prázdne sľuby. Každý náš tip zverejňujeme aj s výsledkom a sledujeme dlhodobú výnosnosť. K tomu nástroje, aby si si edge vedel spočítať sám.</p>
+    <div class="pills"><span class="pill">📊 Transparentný tip-tracker</span><span class="pill">🧮 Value nástroje</span><span class="pill">⚽ Futbal 🎾 Tenis</span></div>
+  </section>
+
+  <!-- ===== VALUE KALKULAČKA ===== -->
+  <section class="card" id="value">
+    <h2>🧮 Value / EV kalkulačka</h2>
+    <p class="sub">Zisti, či má stávka hodnotu (value): porovná tvoj odhad pravdepodobnosti s kurzom.</p>
+    <div class="row">
+      <div><label>Tvoja pravdepodobnosť (%)</label><input id="p" type="number" step="0.1" min="0" max="100" value="55" inputmode="decimal"></div>
+      <div><label>Kurz (desatinný)</label><input id="o" type="number" step="0.01" min="1.01" value="2.00" inputmode="decimal"></div>
+    </div>
+    <label>Bankroll (€) — na výpočet odporúčanej stávky</label><input id="bank" type="number" step="1" min="0" value="100" inputmode="decimal">
+    <div id="valout" style="margin-top:14px"></div>
+    <div id="verdict" class="verdict"></div>
+  </section>
+
+  <!-- ===== TIP-TRACKER ===== -->
+  <section class="card" id="tracker">
+    <h2>📊 Verejný tip-tracker</h2>
+    <p class="sub">Všetky tipy vrátane výsledku. Yield = zisk / celkovo vsadené (jednotky).</p>
+    <div class="trkstat" id="trkstat"></div>
+    <div id="trktable"></div>
+  </section>
+
+  <!-- ===== PREČO ===== -->
+  <section class="card">
+    <h2>Prečo TipLab</h2>
+    <div class="why" style="margin-top:10px">
+      <div class="w"><b>🔍 Transparentnosť</b>Každý tip verejne, aj prehry. Bežiace ROI, žiadne mazanie neúspechov.</div>
+      <div class="w"><b>📈 Dáta, nie pocity</b>Tipy aj nástroje stoja na číslach a value, nie na „istých tipoch".</div>
+      <div class="w"><b>✅ Len legálne</b>Odporúčame výhradne stávkovne s licenciou ÚRHH. 18+, hraj zodpovedne.</div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="rg">Hazard je zábava, nie zdroj príjmu. Hrať môžu len osoby <b>18+</b>. Stávkovanie so sebou nesie riziko straty. Ak cítiš problém: <a href="https://www.somazjeden.sk" target="_blank" rel="noopener">pomoc pri závislosti</a>.</div>
+  TipLab poskytuje informácie a analýzy, nie je stávkovou kanceláriou. Niektoré odkazy môžu byť affiliate — ak sa cez ne zaregistruješ, môžeme dostať províziu (bez vplyvu na cenu pre teba).<br>
+  © <span id="yr"></span> TipLab · tiplab.sk
+</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+$('yr').textContent=new Date().getFullYear();
+const eur=n=>(Math.round(n*100)/100).toLocaleString('sk-SK',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+const pct=n=>(Math.round(n*100)/100).toLocaleString('sk-SK',{minimumFractionDigits:1,maximumFractionDigits:1})+' %';
+
+// ---- Value / EV kalkulačka ----
+function calc(){
+  const p=Math.min(1,Math.max(0,(+$('p').value||0)/100));
+  const o=+$('o').value||0;
+  const bank=+$('bank').value||0;
+  const out=$('valout'), verd=$('verdict');
+  if(o<1.01||p<=0){out.innerHTML='<div class="sub">Zadaj kurz ≥ 1,01 a pravdepodobnosť > 0.</div>';verd.className='verdict';return;}
+  const impl=1/o;                    // implikovaná pravdepodobnosť z kurzu
+  const edge=p*o-1;                  // value / očakávaný zisk na 1 € stávky
+  const kelly=(o>1)?Math.max(0,edge/(o-1)):0; // Kellyho podiel z bankrollu
+  const kHalf=kelly/2;
+  const cls=edge>0?'pos':'neg';
+  out.innerHTML=
+    `<div class="stat"><span>Implikovaná pravdepodobnosť (z kurzu)</span><b>${pct(impl*100)}</b></div>`+
+    `<div class="stat"><span>Tvoja pravdepodobnosť</span><b>${pct(p*100)}</b></div>`+
+    `<div class="stat"><span>Value / edge</span><b class="${cls}">${(edge>0?'+':'')+pct(edge*100)}</b></div>`+
+    `<div class="stat"><span>Očakávaný zisk (EV) na 1 € stávky</span><b class="${cls}">${(edge>0?'+':'')+eur(edge)}</b></div>`+
+    `<div class="stat"><span>Odporúčaná stávka (½ Kelly)</span><b>${edge>0?eur(kHalf*bank)+' · '+pct(kHalf*100)+' bankrollu':'—'}</b></div>`;
+  if(edge>0){verd.className='verdict ok';verd.textContent=`✅ Value stávka: kurz ${$('o').value} je vyšší, než zodpovedá tvojmu odhadu. Dlhodobo +${pct(edge*100)} na vsadené €.`;}
+  else{verd.className='verdict no';verd.textContent=`⛔ Žiadna value: pri tomto kurze je stávka dlhodobo stratová (${pct(edge*100)}). Nestávkuj len kvôli favoritovi.`;}
+}
+['p','o','bank'].forEach(id=>$(id).addEventListener('input',calc));
+calc();
+
+// ---- Tip-tracker ----
+// Každý tip: {datum, sport, zapas, tip, kurz, vysledok:'won'|'lost'|'void'|'pending', jednotka(=stávka v jednotkách, default 1)}
+// Pridávame reálne tipy počas MS 2026 a ďalej. ZATIAĽ PRÁZDNE — žiadne vymyslené výsledky.
+const TIPS=[];
+
+function renderTracker(){
+  const settled=TIPS.filter(t=>t.vysledok==='won'||t.vysledok==='lost');
+  const staked=settled.reduce((s,t)=>s+(t.jednotka||1),0);
+  const profit=settled.reduce((s,t)=>{const u=t.jednotka||1;return s+(t.vysledok==='won'?u*(t.kurz-1):-u);},0);
+  const wins=settled.filter(t=>t.vysledok==='won').length;
+  const yield_=staked>0?profit/staked*100:0;
+  const wr=settled.length?wins/settled.length*100:0;
+  const pc=profit>=0?'pos':'neg';
+  $('trkstat').innerHTML=
+    `<div class="box"><div class="k">Tipov</div><div class="v">${settled.length}</div></div>`+
+    `<div class="box"><div class="k">Úspešnosť</div><div class="v">${settled.length?pct(wr):'—'}</div></div>`+
+    `<div class="box"><div class="k">Yield</div><div class="v ${pc}">${settled.length?(profit>=0?'+':'')+pct(yield_):'—'}</div></div>`+
+    `<div class="box"><div class="k">Zisk (jednotky)</div><div class="v ${pc}">${settled.length?(profit>=0?'+':'')+(Math.round(profit*100)/100):'—'}</div></div>`;
+  if(!TIPS.length){$('trktable').innerHTML='<div class="empty">🧪 Prvé tipy pridávame počas <b>MS 2026</b> a Wimbledonu. Sleduj — každý tip tu ostane aj s výsledkom.</div>';return;}
+  const badge=v=>({won:'<span class="pos">✅ výhra</span>',lost:'<span class="neg">❌ prehra</span>',void:'<span class="sub">↩︎ void</span>',pending:'<span class="sub">⏳ čaká</span>'}[v]||v);
+  let h='<table><thead><tr><th>Dátum</th><th>Zápas / tip</th><th class="r">Kurz</th><th class="r">Výsledok</th></tr></thead><tbody>';
+  TIPS.forEach(t=>{h+=`<tr><td>${t.datum}<br><span class="sub">${t.sport||''}</span></td><td>${t.zapas}<br><span class="sub">${t.tip}</span></td><td class="r">${(+t.kurz).toFixed(2)}</td><td class="r">${badge(t.vysledok)}</td></tr>`;});
+  h+='</tbody></table>';
+  $('trktable').innerHTML=h;
+}
+renderTracker();
+</script>
