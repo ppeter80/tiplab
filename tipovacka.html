@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta name="description" content="Tipovačka Poraz AI — vsádzaj virtuálne kredity na naše tipy a skús poraziť TipLab AI. Zadarmo, len o slávu.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' rx='5' fill='%230a0d14'/><path d='M9 4h6M10.2 4.5v5.3L5.4 17A2 2 0 0 0 7.1 20h9.8a2 2 0 0 0 1.7-3L13.8 9.8V4.5' fill='none' stroke='%2316d989' stroke-width='1.6' stroke-linejoin='round'/></svg>">
+<title>Tipovačka — Poraz AI | TipLab</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.vs{display:flex;gap:10px;align-items:stretch}
+.vs .side{flex:1;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center;position:relative}
+.vs .side.lead{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset}
+.vs .side .who{font-size:.8rem;color:var(--mut);font-weight:700}
+.vs .side .bank{font-size:1.6rem;font-weight:800;font-variant-numeric:tabular-nums;margin:4px 0}
+.vs .side .roi{font-size:.8rem}
+.vs .mid{display:flex;align-items:center;font-weight:800;color:var(--mut)}
+.crown{position:absolute;top:-10px;right:8px;font-size:1.1rem}
+.betrow{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:13px 14px;margin-bottom:10px}
+.betrow .bh{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:4px}
+.betrow .bm{font-weight:700;font-size:.92rem}
+.betrow .bt{font-size:.9rem;margin-bottom:8px}
+.betrow .bk{color:var(--acc);font-weight:800}
+.betform{display:flex;gap:8px;align-items:center}
+.betform input{flex:1;min-width:0}
+.betform button{flex:0 0 auto;white-space:nowrap}
+.placed{font-size:.86rem;background:rgba(61,123,255,.08);border:1px solid rgba(61,123,255,.25);border-radius:8px;padding:8px 10px;color:#bcd0f5}
+.placed.win{background:rgba(22,217,137,.1);border-color:rgba(22,217,137,.3);color:var(--acc)}
+.placed.lose{background:rgba(255,106,91,.1);border-color:rgba(255,106,91,.3);color:var(--red)}
+</style>
+</head>
+<body>
+<header class="site"><div class="hwrap">
+  <a class="logo" href="index.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align:-3px;margin-right:1px"><path d="M9 2.5h6M10.2 3v5.3L5.4 16.4A2 2 0 0 0 7.1 19.5h9.8a2 2 0 0 0 1.7-3.1L13.8 8.3V3" stroke="#16d989" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10.6" cy="14.3" r="1" fill="#16d989"/><circle cx="13.6" cy="16.3" r="1.3" fill="#16d989"/></svg> Tip<span class="lab">Lab</span></a>
+  <nav class="main"><a href="index.html">Domov</a><a href="tipy.html">Tipy</a><a href="tipovacka.html">Tipovačka</a><a href="nastroje.html">Nástroje</a><a href="sprievodcovia.html">Sprievodcovia</a><a href="stavkovne.html">Stávkovne</a></nav>
+  <span class="hbadge">18+</span>
+</div></header>
+
+<main>
+  <section class="hero">
+    <h1>Tipovačka — <span class="g">Poraz AI</span> 🤖</h1>
+    <p class="lead">Dostaneš <b>1000 virtuálnych kreditov</b>. Vsádzaj na naše tipy a skús poraziť TipLab AI. Zadarmo, žiadne reálne peniaze — hráš len o slávu v rebríčku.</p>
+  </section>
+
+  <section class="card">
+    <h2>🏆 Rebríček</h2>
+    <div class="vs" id="vs"></div>
+    <p class="sub" id="standing" style="text-align:center;margin:12px 0 0"></p>
+  </section>
+
+  <section class="card">
+    <h2>🎟️ Stav svoj tiket</h2>
+    <p class="sub">Vsaď kredity na naše aktívne tipy. Po odohraní zápasu sa zúčtuje (výhra = stávka × kurz). AI vsádza na každý svoj tip po 100 kreditov.</p>
+    <div id="bets"></div>
+  </section>
+
+  <section class="card">
+    <div class="stat"><span>Tvoj bankroll</span><b id="s-bank"></b></div>
+    <div class="stat"><span>V hre (otvorené stávky)</span><b id="s-open"></b></div>
+    <div class="stat"><span>Voľné na stávky</span><b id="s-avail"></b></div>
+    <div style="margin-top:12px"><button class="btn" onclick="resetGame()">↺ Reset hry (nové 1000 kreditov)</button></div>
+    <p class="sub" style="margin-top:10px">Herná tipovačka používa výlučne <b>virtuálny kredit bez peňažnej hodnoty</b> — nie je to hazard a nedá sa vyplatiť. 18+.</p>
+  </section>
+</main>
+
+<footer class="site"><div class="fwrap">
+  <div class="rg">Hazard je zábava, nie zdroj príjmu. Hrať môžu len osoby <b>18+</b>. Stávkovanie nesie riziko straty. Ak cítiš problém: <a href="https://www.somazjeden.sk" target="_blank" rel="noopener">pomoc pri závislosti</a>.</div>
+  <nav><a href="index.html">Domov</a><a href="tipy.html">Tipy</a><a href="tipovacka.html">Tipovačka</a><a href="nastroje.html">Nástroje</a><a href="sprievodcovia.html">Sprievodcovia</a><a href="stavkovne.html">Stávkovne</a><a href="o-nas.html">O nás</a><a href="kontakt.html">Kontakt</a><a href="zasady-ochrany.html">Ochrana údajov</a><a href="podmienky.html">Podmienky</a></nav>
+  © <span id="yr"></span> TipLab · tiplab.sk
+</div></footer>
+
+<script src="tips-data.js"></script>
+<script>
+const START=1000, AISTK=100, KEY='tl_game_v1';
+const eur = n => Math.round(n).toLocaleString('sk-SK');
+const pct = n => (Math.round(n*10)/10).toLocaleString('sk-SK',{minimumFractionDigits:1,maximumFractionDigits:1})+' %';
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{bets:{}}}catch(e){return {bets:{}}}}
+function save(g){localStorage.setItem(KEY,JSON.stringify(g))}
+let G=load(); if(!G.bets)G.bets={};
+
+function userPL(){let pl=0,open=0,ss=0;
+  TIPS.forEach(t=>{const b=G.bets[t.id]; if(!b)return;
+    if(t.vysledok==='won'){pl+=b.stake*(t.kurz-1);ss+=b.stake;}
+    else if(t.vysledok==='lost'){pl-=b.stake;ss+=b.stake;}
+    else if(t.vysledok==='void'){}
+    else open+=b.stake;
+  });
+  return {pl,open,bankroll:START+pl,avail:START+pl-open,roi:ss>0?pl/ss*100:null};
+}
+function aiPL(){let pl=0,open=0,ss=0;
+  TIPS.forEach(t=>{
+    if(t.vysledok==='won'){pl+=AISTK*(t.kurz-1);ss+=AISTK;}
+    else if(t.vysledok==='lost'){pl-=AISTK;ss+=AISTK;}
+    else if(t.vysledok==='void'){}
+    else open+=AISTK;
+  });
+  return {pl,open,bankroll:START+pl,roi:ss>0?pl/ss*100:null};
+}
+function placeBet(id){
+  const t=TIPS.find(x=>x.id===id); if(!t||t.vysledok!=='pending')return;
+  const inp=document.getElementById('stake-'+id); const stake=Math.floor(+inp.value||0);
+  const u=userPL();
+  if(stake<1){alert('Zadaj stávku aspoň 1 kredit.');return;}
+  if(stake>u.avail){alert('Nemáš dosť voľných kreditov. Voľné: '+eur(u.avail));return;}
+  G.bets[id]={stake, kurz:t.kurz}; save(G); render();
+}
+function resetGame(){ if(!confirm('Vynulovať hru a začať znova s 1000 kreditmi?'))return; G={bets:{}}; save(G); render(); }
+
+function render(){
+  const u=userPL(), a=aiPL();
+  const uLead=u.bankroll>=a.bankroll;
+  document.getElementById('vs').innerHTML=
+    `<div class="side${uLead?' lead':''}">${uLead?'<span class="crown">👑</span>':''}<div class="who">🙂 TY</div><div class="bank">${eur(u.bankroll)}</div><div class="roi ${u.pl>=0?'pos':'neg'}">${u.roi==null?'ROI —':'ROI '+(u.pl>=0?'+':'')+pct(u.roi)}</div></div>`+
+    `<div class="mid">vs</div>`+
+    `<div class="side${!uLead?' lead':''}">${!uLead?'<span class="crown">👑</span>':''}<div class="who">🤖 TipLab AI</div><div class="bank">${eur(a.bankroll)}</div><div class="roi ${a.pl>=0?'pos':'neg'}">${a.roi==null?'ROI —':'ROI '+(a.pl>=0?'+':'')+pct(a.roi)}</div></div>`;
+  const diff=Math.abs(u.bankroll-a.bankroll);
+  document.getElementById('standing').innerHTML = diff===0 ? 'Zatiaľ nerozhodne — všetko sa ešte len začína.' :
+    (uLead? `Vedieš o <b>${eur(diff)}</b> kreditov proti AI! 🎉` : `AI je o <b>${eur(diff)}</b> kreditov pred tebou. Zaútoč! 🤖`);
+
+  const ico=t=>t.sport==='tenis'?'🎾':'⚽';
+  document.getElementById('bets').innerHTML = TIPS.map(t=>{
+    const b=G.bets[t.id];
+    let bottom;
+    if(t.vysledok==='won'||t.vysledok==='lost'||t.vysledok==='void'){
+      if(b){const res=t.vysledok==='won'?`✅ Výhra! +${eur(b.stake*(t.kurz-1))} kreditov`:(t.vysledok==='void'?'↩︎ Void — stávka vrátená':`❌ Prehra −${eur(b.stake)} kreditov`);
+        bottom=`<div class="placed ${t.vysledok==='won'?'win':(t.vysledok==='lost'?'lose':'')}">Vsadené ${eur(b.stake)} @ ${t.kurz.toFixed(2)} · ${res}</div>`;}
+      else bottom=`<div class="sub">Zápas odohraný — nestavil si.</div>`;
+    } else if(b){
+      bottom=`<div class="placed">🎟️ Vsadené <b>${eur(b.stake)}</b> @ ${t.kurz.toFixed(2)} · potenciálna výplata <b>${eur(b.stake*t.kurz)}</b> ⏳</div>`;
+    } else {
+      bottom=`<div class="betform"><input id="stake-${t.id}" type="number" min="1" step="1" placeholder="kredity" inputmode="numeric"><button class="btn acc" onclick="placeBet('${t.id}')">Staviť</button></div>`;
+    }
+    return `<div class="betrow"><div class="bh"><span class="bm">${ico(t)} ${t.zapas}</span><span class="sub">${t.datum}</span></div>`+
+      `<div class="bt"><b>${t.tip}</b> <span class="bk">@ ${t.kurz.toFixed(2)}</span></div>${bottom}</div>`;
+  }).join('');
+
+  document.getElementById('s-bank').textContent=eur(u.bankroll)+' kr.';
+  document.getElementById('s-open').textContent=eur(u.open)+' kr.';
+  document.getElementById('s-avail').textContent=eur(u.avail)+' kr.';
+}
+render();
+</script>
+<script src="site.js"></script>
+</body>
+</html>
