@@ -34,6 +34,9 @@ main{max-width:860px;margin:0 auto;padding:16px 14px 8px}
 h2{font-size:1.2rem;margin:0 0 4px;letter-spacing:-.3px}
 h3{font-size:1rem;margin:0 0 4px}
 .sub{color:var(--mut);font-size:.85rem;margin:0 0 12px}
+main p{margin:0 0 10px}
+main ul{margin:6px 0 4px;padding-left:20px}
+main li{margin:6px 0}
 .grid2{display:grid;grid-template-columns:1fr;gap:12px}
 @media(min-width:620px){.grid2{grid-template-columns:1fr 1fr}.hero h1{font-size:2.1rem}}
 
