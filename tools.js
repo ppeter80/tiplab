@@ -88,7 +88,25 @@ function convCalc(){
     `<div class="stat"><span>Implikovaná pravdepodobnosť</span><b>${pctT(impl)}</b></div>`;
 }
 
+/* 6) Porovnávač kurzov (tá istá stávka u viacerých stávkovní) */
+function compareCalc(){
+  const stake=num('pk_stake'), rows=[];
+  for(let i=1;i<=4;i++){
+    const o=+($t('pk_o'+i)||{}).value||0;
+    const n=((($t('pk_n'+i)||{}).value)||('Stávkovňa '+i)).trim()||('Stávkovňa '+i);
+    if(o>1) rows.push({n,o});
+  }
+  const out=$t('pk_out'); if(!out) return;
+  if(rows.length<2){out.innerHTML='<div class="sub">Zadaj kurz aspoň pri dvoch stávkovniach.</div>';return;}
+  rows.sort((a,b)=>b.o-a.o);
+  const best=rows[0], worst=rows[rows.length-1], diff=stake*(best.o-worst.o);
+  let h=rows.map((r,i)=>`<div class="stat"><span>${i===0?'🏆 ':''}${r.n}</span><b class="${i===0?'pos':''}">${r.o.toFixed(2)}${i===0?' · '+eurT(stake*r.o):''}</b></div>`).join('');
+  h+=`<div class="verdict ok" style="display:block">🏆 Najlepší kurz: <b>${best.n} (${best.o.toFixed(2)})</b>. Pri stávke ${eurT(stake)} vyhráš <b>${eurT(stake*best.o)}</b> — o <b>${eurT(diff)}</b> viac než pri najhoršom (${worst.n} ${worst.o.toFixed(2)}).</div>`;
+  out.innerHTML=h;
+}
+
 function initTools(){
+  bind(['pk_o1','pk_o2','pk_o3','pk_o4','pk_n1','pk_n2','pk_n3','pk_n4','pk_stake'], compareCalc);
   bind(['v_p','v_o','v_bank'], valueCalc);
   bind(['s_bank','s_o','s_p','s_frac'], stakeCalc);
   bind(['a_a','a_b','a_total'], arbCalc);

@@ -22,6 +22,18 @@
     <p class="lead">Rátaj value, správnu výšku stávky, arbitráž aj akumulátor. Všetko zadarmo, priamo v prehliadači — nič sa nikam neposiela.</p>
   </section>
 
+  <!-- Porovnávač kurzov -->
+  <section class="card" id="porovnavac">
+    <h2>⚖️ Porovnávač kurzov</h2>
+    <p class="sub">Zadaj kurz tej istej stávky u viacerých stávkovní → ukáže najlepší a o koľko viac vyhráš.</p>
+    <div class="row"><div><label>Stávkovňa 1</label><input id="pk_n1" type="text" value="Tipsport"></div><div><label>Kurz</label><input id="pk_o1" type="number" step="0.01" min="1.01" value="1.85" inputmode="decimal"></div></div>
+    <div class="row"><div><label>Stávkovňa 2</label><input id="pk_n2" type="text" value="Fortuna"></div><div><label>Kurz</label><input id="pk_o2" type="number" step="0.01" min="1.01" value="1.92" inputmode="decimal"></div></div>
+    <div class="row"><div><label>Stávkovňa 3</label><input id="pk_n3" type="text" value="Niké"></div><div><label>Kurz</label><input id="pk_o3" type="number" step="0.01" min="1.01" value="1.88" inputmode="decimal"></div></div>
+    <div class="row"><div><label>Stávkovňa 4</label><input id="pk_n4" type="text" value="DOXXbet"></div><div><label>Kurz</label><input id="pk_o4" type="number" step="0.01" min="1.01" value="1.90" inputmode="decimal"></div></div>
+    <label>Stávka (€)</label><input id="pk_stake" type="number" step="1" min="0" value="50" inputmode="decimal">
+    <div id="pk_out" style="margin-top:14px"></div>
+  </section>
+
   <!-- Value / EV -->
   <section class="card" id="value">
     <h2>🧮 Value / EV kalkulačka</h2>
