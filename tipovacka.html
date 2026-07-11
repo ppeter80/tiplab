@@ -32,6 +32,15 @@
 tbody tr.me{background:rgba(22,217,137,.09)}
 tbody tr.me td{border-bottom-color:rgba(22,217,137,.28)}
 tbody tr.me b{color:var(--acc)}
+.pmodal{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(2,4,10,.86);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.pmodal.on{display:flex;animation:pfade .18s ease}
+@keyframes pfade{from{opacity:0}to{opacity:1}}
+.pcard{position:relative;width:100%;max-width:440px;background:#0a0d14;border:1px solid var(--acc);border-radius:16px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.65)}
+.pcard video{display:block;width:100%;background:#000}
+.pcard .pft{padding:13px 14px 15px;text-align:center}
+.pcard .pft .ptt{font-weight:800;margin-bottom:9px}
+.pcard .pclose{position:absolute;top:9px;right:11px;width:34px;height:34px;border-radius:50%;border:none;background:rgba(0,0,0,.55);color:#fff;font-size:1.1rem;font-weight:700;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center}
+.pcard .pclose:hover{background:rgba(0,0,0,.8)}
 </style>
 </head>
 <body>
@@ -68,6 +77,17 @@ tbody tr.me b{color:var(--acc)}
     <p class="sub" style="margin-top:10px">Herná tipovačka používa výlučne <b>virtuálny kredit bez peňažnej hodnoty</b> — nie je to hazard a nedá sa vyplatiť. 18+.</p>
   </section>
 </main>
+
+<div class="pmodal" id="pmodal" role="dialog" aria-modal="true" aria-label="Tip zaznamenaný">
+  <div class="pcard">
+    <button class="pclose" onclick="closePrz()" aria-label="Zavrieť">✕</button>
+    <video id="pvid" src="prezident.mp4" playsinline preload="auto"></video>
+    <div class="pft">
+      <div class="ptt">🎟️ Tvoj tip je zaznamenaný!</div>
+      <button class="btn acc" onclick="closePrz()">Zavrieť ✕</button>
+    </div>
+  </div>
+</div>
 
 <footer class="site"><div class="fwrap">
   <div class="rg">Hazard je zábava, nie zdroj príjmu. Hrať môžu len osoby <b>18+</b>. Stávkovanie nesie riziko straty. Ak cítiš problém: <a href="https://www.somazjeden.sk" target="_blank" rel="noopener">pomoc pri závislosti</a>.</div>
@@ -117,6 +137,17 @@ function placeBet(id){
   if(stake<1){alert('Zadaj stávku aspoň 1 kredit.');return;}
   if(stake>u.avail){alert('Nemáš dosť voľných kreditov. Voľné: '+eur(u.avail));return;}
   G.bets[id]={stake, kurz:t.kurz}; save(G); render();
+  showPrz();
+}
+function showPrz(){
+  const m=document.getElementById('pmodal'), v=document.getElementById('pvid');
+  m.classList.add('on'); document.body.style.overflow='hidden';
+  try{ v.currentTime=0; const p=v.play(); if(p&&p.catch)p.catch(()=>{}); }catch(e){}
+}
+function closePrz(){
+  const m=document.getElementById('pmodal'), v=document.getElementById('pvid');
+  try{ v.pause(); }catch(e){}
+  m.classList.remove('on'); document.body.style.overflow='';
 }
 function resetGame(){ if(!confirm('Vynulovať hru a začať znova s 1000 kreditmi?'))return; G={bets:{}}; save(G); render(); }
 
