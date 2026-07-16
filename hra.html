@@ -75,9 +75,10 @@
       <input id="email" type="email" autocomplete="email" placeholder="ty@email.sk">
       <label class="muted">Heslo</label>
       <input id="pass" type="password" autocomplete="current-password" placeholder="••••••••">
-      <div class="row" style="margin-top:12px">
-        <button id="btnLogin" class="grow">Prihlásiť</button>
-        <button id="btnSignup" class="ghost grow">Registrovať</button>
+      <button id="btnPrimary" style="width:100%;margin-top:14px">Prihlásiť</button>
+      <div style="text-align:center;margin-top:12px;color:var(--dim);font-size:13px">
+        <span id="switchTxt">Nemáš účet?</span>
+        <a id="toggleMode" style="color:var(--accent);cursor:pointer;font-weight:700">Zaregistruj sa</a>
       </div>
       <div class="err" id="authErr"></div>
     </div>
@@ -166,23 +167,31 @@ const fmt = n => Math.round(n).toLocaleString("sk-SK");
 function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),1800);}
 
 /* ---------- AUTH ---------- */
-$("#btnLogin").onclick = async () => {
+let authMode="login";
+function setMode(m){
+  authMode=m;
+  $("#btnPrimary").textContent = m==="login" ? "Prihlásiť" : "Registrovať";
+  $("#nameField").classList.toggle("hide", m!=="register");
+  $("#switchTxt").textContent = m==="login" ? "Nemáš účet?" : "Máš už účet?";
+  $("#toggleMode").textContent = m==="login" ? "Zaregistruj sa" : "Prihlás sa";
   $("#authErr").textContent="";
-  const {error} = await sb.auth.signInWithPassword({email:$("#email").value.trim(), password:$("#pass").value});
-  if(error) $("#authErr").textContent = translate(error.message);
-};
-$("#btnSignup").onclick = async () => {
+}
+$("#toggleMode").onclick = () => setMode(authMode==="login" ? "register" : "login");
+$("#btnPrimary").onclick = async () => {
   $("#authErr").textContent="";
-  if($("#nameField").classList.contains("hide")){
-    $("#nameField").classList.remove("hide");
-    $("#authErr").textContent="Zadaj meno a klikni Registrovať znova.";
-    return;
+  const email=$("#email").value.trim(), pass=$("#pass").value;
+  if(!email||!pass){ $("#authErr").textContent="Zadaj e-mail aj heslo."; return; }
+  if(authMode==="login"){
+    const {error} = await sb.auth.signInWithPassword({email, password:pass});
+    if(error) $("#authErr").textContent = translate(error.message);
+  } else {
+    const name=$("#dispName").value.trim();
+    if(!name){ $("#authErr").textContent="Zadaj meno."; return; }
+    const {data,error} = await sb.auth.signUp({email, password:pass});
+    if(error){ $("#authErr").textContent=translate(error.message); return; }
+    if(!data.session){ $("#authErr").textContent="Účet vytvorený. Potvrď e-mail (alebo vypni Confirm email v Supabase) a prihlás sa."; setMode("login"); return; }
+    await afterLogin(name);
   }
-  const name=$("#dispName").value.trim();
-  const {data,error} = await sb.auth.signUp({email:$("#email").value.trim(), password:$("#pass").value});
-  if(error){$("#authErr").textContent=translate(error.message);return;}
-  if(!data.session){$("#authErr").textContent="Účet vytvorený. Ak treba, potvrď e-mail a prihlás sa.";return;}
-  await afterLogin(name);
 };
 $("#btnLogout").onclick = async () => { await sb.auth.signOut(); location.reload(); };
 
