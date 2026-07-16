@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Tiplab — čoskoro</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>🧪</text></svg>">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{--bg:#000;--txt:#eef1f5;--dim:#8b95a3;--accent:#16d989;--line:#23262e;--card:#0e0f13}
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{background:radial-gradient(1200px 600px at 50% -10%,#0c2a1f 0%,#000 60%);color:var(--txt);
+       font:16px/1.5 -apple-system,Segoe UI,Roboto,system-ui,sans-serif;
+       display:flex;flex-direction:column;align-items:center;justify-content:center;
+       min-height:100vh;text-align:center;padding:24px}
+  .logo{font-size:40px;font-weight:800;letter-spacing:1px;margin-bottom:6px}
+  .logo b{color:var(--accent)}
+  .badge{display:inline-block;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);
+         border:1px solid #1c5c43;border-radius:20px;padding:4px 12px;margin-bottom:22px}
+  h1{font-size:24px;margin:0 0 10px}
+  p{color:var(--dim);max-width:420px;margin:0 auto 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:24px;width:100%;max-width:340px;text-align:left}
+  label{font-size:13px;color:var(--dim)}
+  input{width:100%;background:#15171d;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:11px 12px;margin:6px 0 12px;font:inherit}
+  button{width:100%;padding:13px;border:none;border-radius:10px;background:var(--accent);color:#04160d;font-weight:800;font-size:15px;cursor:pointer}
+  button:active{opacity:.85}
+  .err{color:#e0555a;font-size:13px;min-height:18px;margin-top:8px;text-align:center}
+  .foot{margin-top:26px;color:#555;font-size:12px}
+</style>
+</head>
+<body>
+  <div class="logo">Tip<b>lab</b></div>
+  <div class="badge">Under construction</div>
+  <h1>Pripravujeme niečo dobré.</h1>
+  <p>Dátami podložené tipy, nástroje a tipovacia hra proti AI. Spúšťame čoskoro.</p>
+
+  <div class="card">
+    <label>Meno</label>
+    <input id="name" placeholder="Peter" value="Peter" autocomplete="nickname">
+    <label>Heslo (pre testerov)</label>
+    <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password">
+    <button id="enter">Vstúpiť →</button>
+    <div class="err" id="err"></div>
+  </div>
+  <div class="foot">© Tiplab · 18+ · Hraj s rozumom</div>
+
+<script>
+const SUPABASE_URL="https://chekxmexwigvbqclrrin.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_73CPQ3p9-Eu_0k2KMGpMag_9kybj503";
+const ADMIN_PASS="palo50";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
+// ak už je session + príznak, rovno na web
+sb.auth.getSession().then(({data})=>{
+  if(data.session && localStorage.getItem('tiplab_ok')==='1') location.replace('index.html');
+});
+
+async function enter(){
+  const err=document.getElementById('err'); err.textContent="";
+  const name=(document.getElementById('name').value||"").trim()||"Hráč";
+  if(document.getElementById('pass').value!==ADMIN_PASS){ err.textContent="Nesprávne heslo."; return; }
+  const {error}=await sb.auth.signInAnonymously();
+  if(error){
+    if(/anonymous.*disabled/i.test(error.message)||/signups?.*disabled/i.test(error.message))
+      err.textContent="V Supabase treba zapnúť Anonymous sign-ins.";
+    else err.textContent=error.message;
+    return;
+  }
+  localStorage.setItem('tiplab_ok','1');
+  localStorage.setItem('tiplab_name',name);
+  location.replace('index.html');
+}
+document.getElementById('enter').onclick=enter;
+document.getElementById('pass').addEventListener('keydown',e=>{ if(e.key==='Enter') enter(); });
+</script>
+</body>
+</html>
