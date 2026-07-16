@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>Tiplab — čoskoro</title>
+<title>Tiplab — prihlásenie</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>🧪</text></svg>">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -15,65 +15,124 @@
        font:16px/1.5 -apple-system,Segoe UI,Roboto,system-ui,sans-serif;
        display:flex;flex-direction:column;align-items:center;justify-content:center;
        min-height:100vh;text-align:center;padding:24px}
-  .logo{font-size:40px;font-weight:800;letter-spacing:1px;margin-bottom:6px}
+  .logo{font-size:38px;font-weight:800;letter-spacing:1px;margin-bottom:4px}
   .logo b{color:var(--accent)}
-  .badge{display:inline-block;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);
-         border:1px solid #1c5c43;border-radius:20px;padding:4px 12px;margin-bottom:22px}
-  h1{font-size:24px;margin:0 0 10px}
-  p{color:var(--dim);max-width:420px;margin:0 auto 8px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:24px;width:100%;max-width:340px;text-align:left}
+  .badge{display:inline-block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);
+         border:1px solid #1c5c43;border-radius:20px;padding:4px 12px;margin-bottom:18px}
+  p.lead{color:var(--dim);max-width:420px;margin:0 auto 4px;font-size:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:20px;width:100%;max-width:360px;text-align:left}
   label{font-size:13px;color:var(--dim)}
   input{width:100%;background:#15171d;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:11px 12px;margin:6px 0 12px;font:inherit}
-  button{width:100%;padding:13px;border:none;border-radius:10px;background:var(--accent);color:#04160d;font-weight:800;font-size:15px;cursor:pointer}
+  button{width:100%;padding:12px;border:none;border-radius:10px;font-weight:800;font-size:15px;cursor:pointer}
+  .primary{background:var(--accent);color:#04160d}
+  .google{background:#fff;color:#1f1f1f;display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:4px}
+  .google svg{width:18px;height:18px}
   button:active{opacity:.85}
+  .sep{display:flex;align-items:center;gap:10px;color:#555;font-size:12px;margin:14px 0}
+  .sep::before,.sep::after{content:"";flex:1;height:1px;background:var(--line)}
+  .switch{text-align:center;margin-top:12px;color:var(--dim);font-size:13px}
+  .switch a{color:var(--accent);cursor:pointer;font-weight:700}
   .err{color:#e0555a;font-size:13px;min-height:18px;margin-top:8px;text-align:center}
-  .foot{margin-top:26px;color:#555;font-size:12px}
+  .ok{color:var(--accent);font-size:13px;min-height:18px;margin-top:8px;text-align:center}
+  .foot{margin-top:24px;color:#555;font-size:12px}
 </style>
 </head>
 <body>
   <div class="logo">Tip<b>lab</b></div>
-  <div class="badge">Under construction</div>
-  <h1>Pripravujeme niečo dobré.</h1>
-  <p>Dátami podložené tipy, nástroje a tipovacia hra proti AI. Spúšťame čoskoro.</p>
+  <div class="badge">Beta · na pozvanie</div>
+  <p class="lead">Dátami podložené tipy a tipovacia hra proti AI.</p>
 
   <div class="card">
-    <label>Meno</label>
-    <input id="name" placeholder="Peter" value="Peter" autocomplete="nickname">
-    <label>Heslo (pre testerov)</label>
+    <button class="google" id="gbtn">
+      <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.6 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6.1C12.2 13.7 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.6c0-1.6-.1-3.1-.4-4.6H24v9.1h12.4c-.5 2.9-2.1 5.4-4.6 7.1l7.1 5.5c4.1-3.8 6.5-9.4 6.5-16.1z"/><path fill="#FBBC05" d="M10.4 28.3c-.5-1.4-.7-2.8-.7-4.3s.3-2.9.7-4.3l-7.8-6.1C.9 16.7 0 20.2 0 24s.9 7.3 2.6 10.4l7.8-6.1z"/><path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.1-5.5c-2 1.3-4.5 2.1-8.1 2.1-6.4 0-11.8-4.2-13.6-9.9l-7.8 6.1C6.5 42.6 14.6 48 24 48z"/></svg>
+      Pokračovať cez Google
+    </button>
+    <div class="sep">alebo e-mailom</div>
+
+    <div id="nameWrap" class="hide">
+      <label>Meno (v rebríčku)</label>
+      <input id="name" placeholder="napr. Peter" autocomplete="nickname">
+    </div>
+    <label>E-mail</label>
+    <input id="email" type="email" placeholder="ty@email.sk" autocomplete="email">
+    <label>Heslo</label>
     <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password">
-    <button id="enter">Vstúpiť →</button>
+    <button class="primary" id="submit">Prihlásiť</button>
+
+    <div class="switch"><span id="switchTxt">Nemáš účet?</span> <a id="toggle">Zaregistruj sa</a></div>
     <div class="err" id="err"></div>
+    <div class="ok" id="ok"></div>
   </div>
   <div class="foot">© Tiplab · 18+ · Hraj s rozumom</div>
 
 <script>
 const SUPABASE_URL="https://chekxmexwigvbqclrrin.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_73CPQ3p9-Eu_0k2KMGpMag_9kybj503";
-const ADMIN_PASS="palo50";
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const $=s=>document.querySelector(s);
+let mode="login";
+const REDIRECT=location.href.split("?")[0].split("#")[0];
 
-// ak už je session + príznak, rovno na web
-sb.auth.getSession().then(({data})=>{
-  if(data.session && localStorage.getItem('tiplab_ok')==='1') location.replace('index.html');
-});
-
-async function enter(){
-  const err=document.getElementById('err'); err.textContent="";
-  const name=(document.getElementById('name').value||"").trim()||"Hráč";
-  if(document.getElementById('pass').value!==ADMIN_PASS){ err.textContent="Nesprávne heslo."; return; }
-  const {error}=await sb.auth.signInAnonymously();
-  if(error){
-    if(/anonymous.*disabled/i.test(error.message)||/signups?.*disabled/i.test(error.message))
-      err.textContent="V Supabase treba zapnúť Anonymous sign-ins.";
-    else err.textContent=error.message;
-    return;
-  }
-  localStorage.setItem('tiplab_ok','1');
-  localStorage.setItem('tiplab_name',name);
-  location.replace('index.html');
+function enterSite(session){
+  const nm = localStorage.getItem("tiplab_name")
+    || session?.user?.user_metadata?.full_name
+    || session?.user?.user_metadata?.name
+    || (session?.user?.email||"").split("@")[0] || "Hráč";
+  localStorage.setItem("tiplab_name", nm);
+  localStorage.setItem("tiplab_ok","1");
+  location.replace("index.html");
 }
-document.getElementById('enter').onclick=enter;
-document.getElementById('pass').addEventListener('keydown',e=>{ if(e.key==='Enter') enter(); });
+// už prihlásený (aj po Google redirecte) -> na web
+sb.auth.getSession().then(({data})=>{ if(data.session) enterSite(data.session); });
+
+function setMode(m){
+  mode=m;
+  $("#submit").textContent = m==="login"?"Prihlásiť":"Registrovať";
+  $("#nameWrap").classList.toggle("hide", m!=="register");
+  $("#switchTxt").textContent = m==="login"?"Nemáš účet?":"Máš už účet?";
+  $("#toggle").textContent = m==="login"?"Zaregistruj sa":"Prihlás sa";
+  $("#err").textContent=""; $("#ok").textContent="";
+}
+$("#toggle").onclick=()=>setMode(mode==="login"?"register":"login");
+
+function tr(m){
+  if(/Invalid login/i.test(m)) return "Nesprávny e-mail alebo heslo.";
+  if(/already registered/i.test(m)) return "Tento e-mail už existuje — prihlás sa.";
+  if(/at least 6/i.test(m)) return "Heslo musí mať aspoň 6 znakov.";
+  if(/rate limit/i.test(m)) return "Priveľa pokusov o e-mail. Skús o chvíľu, alebo choď cez Google.";
+  if(/not confirmed|confirm/i.test(m)) return "Účet ešte nie je potvrdený — klikni link v e-maile.";
+  return m;
+}
+
+$("#submit").onclick=async()=>{
+  $("#err").textContent=""; $("#ok").textContent="";
+  const email=$("#email").value.trim(), pass=$("#pass").value;
+  if(!email||!pass){ $("#err").textContent="Zadaj e-mail aj heslo."; return; }
+  if(mode==="login"){
+    const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+    if(error){ $("#err").textContent=tr(error.message); return; }
+    enterSite(data.session);
+  } else {
+    const name=$("#name").value.trim();
+    if(!name){ $("#err").textContent="Zadaj meno."; return; }
+    localStorage.setItem("tiplab_name",name);
+    const {data,error}=await sb.auth.signUp({email,password:pass,
+      options:{emailRedirectTo:REDIRECT, data:{full_name:name}}});
+    if(error){ $("#err").textContent=tr(error.message); return; }
+    if(data.session){ enterSite(data.session); }
+    else { $("#ok").textContent="Účet vytvorený ✔ Potvrď ho cez link v e-maile, potom sa prihlás."; setMode("login"); }
+  }
+};
+
+$("#gbtn").onclick=async()=>{
+  $("#err").textContent="";
+  const {error}=await sb.auth.signInWithOAuth({provider:"google",options:{redirectTo:REDIRECT}});
+  if(error){
+    if(/provider.*not enabled|Unsupported provider/i.test(error.message))
+      $("#err").textContent="Google prihlásenie ešte nie je nastavené v Supabase.";
+    else $("#err").textContent=error.message;
+  }
+};
 </script>
 </body>
 </html>

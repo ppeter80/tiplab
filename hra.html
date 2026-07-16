@@ -87,7 +87,7 @@
       </div>
       <div style="text-align:right">
         <div class="bal" id="myBal">—</div>
-        <div class="muted">bodov</div>
+        <div class="muted" id="myBalSub">voľné body</div>
       </div>
     </div>
 
@@ -95,6 +95,11 @@
     <section id="tab-matches">
       <div class="muted" style="margin:6px 0">Cieľ kola: dostať sa na <b style="color:var(--gold)">50 000</b> (5×). Kto prvý, vyhráva kolo.</div>
       <div id="matchList"></div>
+    </section>
+
+    <!-- MOJE TIPY -->
+    <section id="tab-mybets" class="hide">
+      <div id="mybets"></div>
     </section>
 
     <!-- REBRÍČEK -->
@@ -140,8 +145,9 @@
 
 <nav id="nav" class="hide">
   <button class="tabbtn on" data-tab="matches"><span class="ic">⚽</span>Zápasy</button>
+  <button class="tabbtn" data-tab="mybets"><span class="ic">🎫</span>Moje tipy</button>
   <button class="tabbtn" data-tab="board"><span class="ic">🏆</span>Rebríček</button>
-  <button class="tabbtn" data-tab="agents"><span class="ic">🤖</span>AI agenti</button>
+  <button class="tabbtn" data-tab="agents"><span class="ic">🤖</span>AI</button>
   <button class="tabbtn hide" data-tab="admin" id="adminTab"><span class="ic">⚙️</span>Admin</button>
 </nav>
 <div class="toast" id="toast"></div>
@@ -161,19 +167,13 @@ const fmt = n => Math.round(n).toLocaleString("sk-SK");
 function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),1800);}
 
 /* ---------- AUTH ---------- */
-const ADMIN_PASS="palo50";
+// prihlásenie beží na gate.html; tu už len využívame session
 let PENDING_NAME=localStorage.getItem('tiplab_name')||null;
-$("#btnPrimary").onclick = async () => {
-  $("#authErr").textContent="";
-  const name=$("#dispName").value.trim()||"Hráč";
-  const pass=$("#pass").value;
-  if(pass!==ADMIN_PASS){ $("#authErr").textContent="Nesprávne heslo."; return; }
-  PENDING_NAME=name;
-  const {error}=await sb.auth.signInAnonymously();
-  if(error){ $("#authErr").textContent=translate(error.message); }
-  // úspech -> afterLogin spustí onAuthStateChange nižšie
+$("#btnLogout").onclick = async () => {
+  await sb.auth.signOut();
+  localStorage.removeItem('tiplab_ok');
+  location.replace('gate.html');
 };
-$("#btnLogout").onclick = async () => { await sb.auth.signOut(); location.reload(); };
 
 function translate(m){
   if(/[Aa]nonymous.*disabled/.test(m) || /signups?.*disabled/i.test(m))
@@ -187,8 +187,13 @@ sb.auth.onAuthStateChange((_e,session)=>{ if(session && !ME) afterLogin(PENDING_
 sb.auth.getSession().then(({data})=>{ if(!data.session) location.replace('gate.html'); });
 
 async function afterLogin(name){
+  if(!name){
+    const {data:ur}=await sb.auth.getUser(); const u=ur&&ur.user;
+    name = (u&&u.user_metadata&&(u.user_metadata.full_name||u.user_metadata.name))
+        || (u&&u.email? u.email.split("@")[0]:null);
+  }
   const {data,error} = await sb.rpc("ensure_player",{p_name:name||null});
-  if(error){$("#authErr").textContent="Chyba profilu: "+error.message;return;}
+  if(error){ location.replace('gate.html'); return; }
   ME = Array.isArray(data)?data[0]:data;
   $("#login").classList.add("hide");
   $("#app").classList.remove("hide");
@@ -198,12 +203,41 @@ async function afterLogin(name){
   await refresh();
 }
 
+let MYBETS=[];
 async function refresh(){
-  await Promise.all([loadMe(), loadMatches(), loadBoard(), loadAgents()]);
+  await Promise.all([loadMe(), loadMatches(), loadBoard(), loadAgents(), loadMyBets()]);
 }
 async function loadMe(){
   const {data} = await sb.from("players").select("*").eq("id",ME.id).single();
-  if(data){ME=data; $("#myBal").textContent=fmt(ME.balance);}
+  if(data){ ME=data; updateBalHeader(); }
+}
+function updateBalHeader(){
+  const inplay = MYBETS.filter(b=>b.status==="open").reduce((s,b)=>s+Number(b.stake),0);
+  $("#myBal").textContent = fmt(ME.balance);
+  $("#myBalSub").innerHTML = "voľné · v hre "+fmt(inplay)+" · spolu "+fmt(Number(ME.balance)+inplay);
+}
+async function loadMyBets(){
+  const {data} = await sb.from("bets").select("*, matches(home,away,sport,commence_time)")
+    .eq("player_id",ME.id).order("placed_at",{ascending:false});
+  MYBETS = data||[];
+  renderMyBets(); updateBalHeader();
+}
+function renderMyBets(){
+  const open=MYBETS.filter(b=>b.status==="open").length;
+  if(!MYBETS.length){ $("#mybets").innerHTML='<p class="muted">Zatiaľ si netipol. Choď na <b>Zápasy</b> a vsaď si.</p>'; return; }
+  const head=`<div class="muted" style="margin:6px 0">Máš <b>${MYBETS.length}</b> tipov (${open} čaká na výsledok).</div>`;
+  $("#mybets").innerHTML = head + MYBETS.map(b=>{
+    const m=b.matches||{}; const pick={home:m.home,draw:"Remíza",away:m.away}[b.selection]||b.selection;
+    const st={open:"⏳ čaká",won:"✅ výhra",lost:"❌ prehra",void:"↩ zrušené"}[b.status]||b.status;
+    const pot=Number(b.stake)*Number(b.locked_odds);
+    const extra = b.status==="open" ? "možná výhra "+fmt(pot)
+               : b.status==="won" ? "získal si "+fmt(b.payout) : "";
+    return `<div class="match">
+        <div class="lg">${m.home||""} vs ${m.away||""}</div>
+        <div class="teams">${pick} <span class="muted" style="font-weight:400">@ ${(+b.locked_odds).toFixed(2)}</span></div>
+        <div class="muted" style="font-size:13px;margin-top:4px">Vklad ${fmt(b.stake)} b · ${st}${extra? " · "+extra:""}</div>
+      </div>`;
+  }).join("");
 }
 
 /* ---------- ZÁPASY ---------- */
@@ -252,7 +286,7 @@ async function placeBet(mid){
   if(error){ toast(betErr(error.message)); return; }
   delete SEL[mid];
   toast("Tip prijatý ✔ (kurz zamknutý)");
-  await Promise.all([loadMe(), loadMatches(), loadBoard()]);
+  await Promise.all([loadMe(), loadMatches(), loadBoard(), loadMyBets()]);
 }
 function betErr(m){
   const map={betting_closed:"Stávkovanie je uzavreté.",insufficient_balance:"Málo bodov.",
@@ -322,9 +356,10 @@ $("#btnAddMatch").onclick = async () => {
 document.querySelectorAll(".tabbtn").forEach(b=>b.onclick=()=>{
   document.querySelectorAll(".tabbtn").forEach(x=>x.classList.remove("on"));
   b.classList.add("on");
-  ["matches","board","agents","admin"].forEach(t=>$("#tab-"+t).classList.toggle("hide", t!==b.dataset.tab));
+  ["matches","mybets","board","agents","admin"].forEach(t=>$("#tab-"+t).classList.toggle("hide", t!==b.dataset.tab));
   if(b.dataset.tab==="board") loadBoard();
   if(b.dataset.tab==="agents") loadAgents();
+  if(b.dataset.tab==="mybets") loadMyBets();
 });
 </script>
 </body>
