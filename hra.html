@@ -67,19 +67,11 @@
     <h1>Tip<b>lab</b></h1>
     <p class="muted">Neverejná demo verzia. Prihlás sa, aby si videl obsah a testoval.</p>
     <div class="card">
-      <div id="nameField" class="hide">
-        <label class="muted">Zobrazované meno</label>
-        <input id="dispName" placeholder="napr. Peter" autocomplete="nickname">
-      </div>
-      <label class="muted">E-mail</label>
-      <input id="email" type="email" autocomplete="email" placeholder="ty@email.sk">
+      <label class="muted">Meno</label>
+      <input id="dispName" placeholder="Peter" value="Peter" autocomplete="nickname">
       <label class="muted">Heslo</label>
       <input id="pass" type="password" autocomplete="current-password" placeholder="••••••••">
-      <button id="btnPrimary" style="width:100%;margin-top:14px">Prihlásiť</button>
-      <div style="text-align:center;margin-top:12px;color:var(--dim);font-size:13px">
-        <span id="switchTxt">Nemáš účet?</span>
-        <a id="toggleMode" style="color:var(--accent);cursor:pointer;font-weight:700">Zaregistruj sa</a>
-      </div>
+      <button id="btnPrimary" style="width:100%;margin-top:14px">Vstúpiť</button>
       <div class="err" id="authErr"></div>
     </div>
   </div>
@@ -167,42 +159,28 @@ const fmt = n => Math.round(n).toLocaleString("sk-SK");
 function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),1800);}
 
 /* ---------- AUTH ---------- */
-let authMode="login";
-function setMode(m){
-  authMode=m;
-  $("#btnPrimary").textContent = m==="login" ? "Prihlásiť" : "Registrovať";
-  $("#nameField").classList.toggle("hide", m!=="register");
-  $("#switchTxt").textContent = m==="login" ? "Nemáš účet?" : "Máš už účet?";
-  $("#toggleMode").textContent = m==="login" ? "Zaregistruj sa" : "Prihlás sa";
-  $("#authErr").textContent="";
-}
-$("#toggleMode").onclick = () => setMode(authMode==="login" ? "register" : "login");
+const ADMIN_PASS="palo50";
+let PENDING_NAME=null;
 $("#btnPrimary").onclick = async () => {
   $("#authErr").textContent="";
-  const email=$("#email").value.trim(), pass=$("#pass").value;
-  if(!email||!pass){ $("#authErr").textContent="Zadaj e-mail aj heslo."; return; }
-  if(authMode==="login"){
-    const {error} = await sb.auth.signInWithPassword({email, password:pass});
-    if(error) $("#authErr").textContent = translate(error.message);
-  } else {
-    const name=$("#dispName").value.trim();
-    if(!name){ $("#authErr").textContent="Zadaj meno."; return; }
-    const {data,error} = await sb.auth.signUp({email, password:pass});
-    if(error){ $("#authErr").textContent=translate(error.message); return; }
-    if(!data.session){ $("#authErr").textContent="Účet vytvorený. Potvrď e-mail (alebo vypni Confirm email v Supabase) a prihlás sa."; setMode("login"); return; }
-    await afterLogin(name);
-  }
+  const name=$("#dispName").value.trim()||"Hráč";
+  const pass=$("#pass").value;
+  if(pass!==ADMIN_PASS){ $("#authErr").textContent="Nesprávne heslo."; return; }
+  PENDING_NAME=name;
+  const {error}=await sb.auth.signInAnonymously();
+  if(error){ $("#authErr").textContent=translate(error.message); }
+  // úspech -> afterLogin spustí onAuthStateChange nižšie
 };
 $("#btnLogout").onclick = async () => { await sb.auth.signOut(); location.reload(); };
 
 function translate(m){
-  if(/Invalid login/i.test(m)) return "Nesprávny e-mail alebo heslo.";
-  if(/already registered/i.test(m)) return "Tento e-mail už existuje — prihlás sa.";
-  if(/at least 6/i.test(m)) return "Heslo musí mať aspoň 6 znakov.";
+  if(/[Aa]nonymous.*disabled/.test(m) || /signups?.*disabled/i.test(m))
+    return "V Supabase treba zapnúť Anonymous sign-ins (Authentication → Sign In / Providers).";
+  if(/Invalid login/i.test(m)) return "Nesprávne heslo.";
   return m;
 }
 
-sb.auth.onAuthStateChange((_e,session)=>{ if(session && !ME) afterLogin(); });
+sb.auth.onAuthStateChange((_e,session)=>{ if(session && !ME) afterLogin(PENDING_NAME); });
 
 async function afterLogin(name){
   const {data,error} = await sb.rpc("ensure_player",{p_name:name||null});
