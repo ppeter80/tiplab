@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Tiplab – SQL setup</title>
+<style>
+  body{margin:0;background:#000;color:#eef1f5;font:15px/1.45 -apple-system,Segoe UI,Roboto,sans-serif;padding:14px}
+  h1{font-size:18px;margin:0 0 2px}
+  h2{font-size:15px;margin:20px 0 6px}
+  .muted{color:#8b95a3;font-size:13px}
+  .step{background:#0e0f13;border:1px solid #23262e;border-radius:12px;padding:12px;margin-top:10px}
+  button{width:100%;padding:13px;border:none;border-radius:10px;background:#39d98a;color:#04160d;font-weight:800;font-size:15px;cursor:pointer}
+  button:active{opacity:.8}
+  textarea{width:100%;height:150px;margin-top:8px;background:#08090c;color:#bfe;border:1px solid #23262e;border-radius:8px;padding:8px;font:11px/1.35 ui-monospace,Menlo,Consolas,monospace;white-space:pre}
+  .ok{color:#39d98a;font-weight:700;min-height:18px;margin-top:6px;font-size:13px}
+  ol{margin:6px 0 0;padding-left:20px;font-size:13px;color:#c3ccd6}
+</style>
+</head>
+<body>
+  <h1>Tiplab — nastavenie databázy</h1>
+  <div class="muted">Postup: skopíruj Časť 1 → v Supabase SQL Editore Run → potom Časť 2 → Run.</div>
+
+  <div class="step">
+    <h2>① Časť 1 — tabuľky + dáta</h2>
+    <button id="c1">📋 Kopírovať Časť 1</button>
+    <div class="ok" id="ok1"></div>
+    <ol>
+      <li>Supabase → <b>SQL Editor</b> → <b>New query</b></li>
+      <li>Vlož (Ctrl+V) → <b>Run</b> → má napísať „Success"</li>
+    </ol>
+    <textarea id="t1" readonly>Načítavam…</textarea>
+  </div>
+
+  <div class="step">
+    <h2>② Časť 2 — funkcie</h2>
+    <button id="c2">📋 Kopírovať Časť 2</button>
+    <div class="ok" id="ok2"></div>
+    <ol>
+      <li>V editore <b>New query</b> (nový, prázdny)</li>
+      <li>Vlož → <b>Run</b> → „Success"</li>
+    </ol>
+    <textarea id="t2" readonly>Načítavam…</textarea>
+  </div>
+
+<script>
+function load(url,ta){fetch(url+'?v='+Date.now()).then(r=>r.text()).then(t=>{ta.value=t;}).catch(e=>{ta.value='Chyba: '+e;});}
+const t1=document.getElementById('t1'), t2=document.getElementById('t2');
+load('schema.sql',t1); load('functions.sql',t2);
+async function copy(ta,ok){
+  try{ ta.select(); ta.setSelectionRange(0,ta.value.length); await navigator.clipboard.writeText(ta.value);
+       ok.textContent='✔ Skopírované — vlož do Supabase a Run.'; }
+  catch(e){ document.execCommand('copy'); ok.textContent='✔ Vybrané a skopírované — vlož do Supabase.'; }
+}
+document.getElementById('c1').onclick=()=>copy(t1,document.getElementById('ok1'));
+document.getElementById('c2').onclick=()=>copy(t2,document.getElementById('ok2'));
+</script>
+</body>
+</html>
