@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Tiplab</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{--bg:#000;--card:#0e0f13;--card2:#15171d;--line:#23262e;--txt:#eef1f5;--dim:#8b95a3;
+        --accent:#39d98a;--accent2:#2c6e9b;--gold:#e7b93b;--red:#e0555a;--chip:#1b1e25}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.45 -apple-system,Segoe UI,Roboto,system-ui,sans-serif;padding-bottom:70px}
+  a{color:var(--accent)}
+  .wrap{max-width:640px;margin:0 auto;padding:14px}
+  h1{font-size:22px;margin:2px 0 2px;letter-spacing:.5px}
+  h1 b{color:var(--accent)}
+  .muted{color:var(--dim);font-size:13px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
+  input,select,button{font:inherit}
+  input,select{width:100%;background:var(--card2);border:1px solid var(--line);color:var(--txt);
+        border-radius:10px;padding:11px 12px;margin-top:6px}
+  button{cursor:pointer;border:none;border-radius:10px;padding:11px 14px;font-weight:700;background:var(--accent);color:#04160d}
+  button.ghost{background:var(--chip);color:var(--txt);border:1px solid var(--line)}
+  button:disabled{opacity:.4;cursor:not-allowed}
+  .row{display:flex;gap:8px;align-items:center}
+  .grow{flex:1}
+  /* login */
+  #login{min-height:70vh;display:flex;flex-direction:column;justify-content:center}
+  .tabbtn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;background:none;color:var(--dim);border:none;padding:8px 0;font-size:11px;font-weight:600}
+  .tabbtn.on{color:var(--accent)}
+  .tabbtn .ic{font-size:19px}
+  nav{position:fixed;left:0;right:0;bottom:0;background:#07080b;border-top:1px solid var(--line);display:flex;max-width:640px;margin:0 auto}
+  /* match */
+  .match{border:1px solid var(--line);border-radius:12px;padding:11px;margin:9px 0;background:var(--card)}
+  .lg{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px}
+  .teams{font-weight:700;margin:3px 0}
+  .odds{display:flex;gap:7px;margin-top:9px}
+  .odds button{flex:1;background:var(--chip);color:var(--txt);border:1px solid var(--line);padding:9px 4px;font-weight:700;display:flex;flex-direction:column;gap:2px;align-items:center}
+  .odds button.sel{background:var(--accent);color:#04160d;border-color:var(--accent)}
+  .odds .k{font-size:12px;color:var(--dim)}
+  .odds button.sel .k{color:#04160d}
+  .closed{color:var(--red);font-size:12px;margin-top:7px}
+  .stakebar{display:none;gap:8px;margin-top:9px}
+  .stakebar.show{display:flex}
+  .lead{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--line)}
+  .rank{width:22px;text-align:center;color:var(--dim);font-weight:700}
+  .bar{height:6px;background:var(--chip);border-radius:4px;overflow:hidden;margin-top:4px}
+  .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+  .pill{font-size:10px;padding:2px 7px;border-radius:20px;background:var(--chip);color:var(--dim);border:1px solid var(--line)}
+  .pill.ai{color:var(--gold);border-color:#4a3d17}
+  .bal{font-weight:800;color:var(--accent)}
+  .agent h3{margin:0 0 2px;font-size:16px}
+  .tip{font-size:13px;color:var(--dim);border-left:2px solid var(--accent2);padding-left:9px;margin:7px 0}
+  .err{color:var(--red);font-size:13px;margin-top:8px;min-height:16px}
+  .hide{display:none}
+  .toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:#111827;border:1px solid var(--line);
+        padding:10px 16px;border-radius:10px;font-size:13px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===================== LOGIN ===================== -->
+  <div id="login">
+    <h1>Tip<b>lab</b></h1>
+    <p class="muted">Neverejná demo verzia. Prihlás sa, aby si videl obsah a testoval.</p>
+    <div class="card">
+      <div id="nameField" class="hide">
+        <label class="muted">Zobrazované meno</label>
+        <input id="dispName" placeholder="napr. Peter" autocomplete="nickname">
+      </div>
+      <label class="muted">E-mail</label>
+      <input id="email" type="email" autocomplete="email" placeholder="ty@email.sk">
+      <label class="muted">Heslo</label>
+      <input id="pass" type="password" autocomplete="current-password" placeholder="••••••••">
+      <div class="row" style="margin-top:12px">
+        <button id="btnLogin" class="grow">Prihlásiť</button>
+        <button id="btnSignup" class="ghost grow">Registrovať</button>
+      </div>
+      <div class="err" id="authErr"></div>
+    </div>
+  </div>
+
+  <!-- ===================== APP ===================== -->
+  <div id="app" class="hide">
+    <div class="row">
+      <div class="grow">
+        <h1>Tip<b>lab</b></h1>
+        <div class="muted" id="whoami"></div>
+      </div>
+      <div style="text-align:right">
+        <div class="bal" id="myBal">—</div>
+        <div class="muted">bodov</div>
+      </div>
+    </div>
+
+    <!-- ZÁPASY -->
+    <section id="tab-matches">
+      <div class="muted" style="margin:6px 0">Cieľ kola: dostať sa na <b style="color:var(--gold)">50 000</b> (5×). Kto prvý, vyhráva kolo.</div>
+      <div id="matchList"></div>
+    </section>
+
+    <!-- REBRÍČEK -->
+    <section id="tab-board" class="hide">
+      <div class="card"><div id="board"></div></div>
+    </section>
+
+    <!-- AI AGENTI -->
+    <section id="tab-agents" class="hide">
+      <div id="agents"></div>
+    </section>
+
+    <!-- ADMIN -->
+    <section id="tab-admin" class="hide">
+      <div class="card">
+        <h3 style="margin-top:0">Pridať zápas</h3>
+        <div class="row"><div class="grow"><label class="muted">Šport</label>
+          <select id="a_sport">
+            <option value="soccer">Futbal (1/X/2)</option>
+            <option value="basketball">NBA (1/2)</option>
+            <option value="icehockey">NHL (1/2)</option>
+            <option value="tennis">Tenis (1/2)</option>
+          </select></div>
+          <div class="grow"><label class="muted">Súťaž</label><input id="a_league" placeholder="Premier League"></div>
+        </div>
+        <div class="row"><div class="grow"><label class="muted">Domáci</label><input id="a_home"></div>
+          <div class="grow"><label class="muted">Hostia</label><input id="a_away"></div></div>
+        <label class="muted">Výkop</label><input id="a_time" type="datetime-local">
+        <div class="row">
+          <div class="grow"><label class="muted">Kurz 1</label><input id="a_oh" type="number" step="0.01"></div>
+          <div class="grow" id="a_drawWrap"><label class="muted">Kurz X</label><input id="a_od" type="number" step="0.01"></div>
+          <div class="grow"><label class="muted">Kurz 2</label><input id="a_oa" type="number" step="0.01"></div>
+        </div>
+        <button id="btnAddMatch" style="margin-top:12px;width:100%">Pridať zápas</button>
+        <div class="err" id="adminErr"></div>
+      </div>
+      <p class="muted">Neskôr sem pribudne automatické ťahanie kurzov z Odds-API.io a auto-vyhodnotenie.</p>
+    </section>
+
+    <button class="ghost" id="btnLogout" style="width:100%;margin:16px 0">Odhlásiť</button>
+  </div>
+</div>
+
+<nav id="nav" class="hide">
+  <button class="tabbtn on" data-tab="matches"><span class="ic">⚽</span>Zápasy</button>
+  <button class="tabbtn" data-tab="board"><span class="ic">🏆</span>Rebríček</button>
+  <button class="tabbtn" data-tab="agents"><span class="ic">🤖</span>AI agenti</button>
+  <button class="tabbtn hide" data-tab="admin" id="adminTab"><span class="ic">⚙️</span>Admin</button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ KONFIG — vlož údaje z nového Supabase projektu ============ */
+const SUPABASE_URL      = "https://chekxmexwigvbqclrrin.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_73CPQ3p9-Eu_0k2KMGpMag_9kybj503";
+/* ====================================================================== */
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $  = s => document.querySelector(s);
+const AGENT_ICON = {favorite:"🛡️",value:"🎯",underdog:"🎲",data:"📊",contrarian:"🔀"};
+let ME = null, MATCHES = [], SEL = {};   // SEL[matchId] = 'home'|'draw'|'away'
+
+const fmt = n => Math.round(n).toLocaleString("sk-SK");
+function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),1800);}
+
+/* ---------- AUTH ---------- */
+$("#btnLogin").onclick = async () => {
+  $("#authErr").textContent="";
+  const {error} = await sb.auth.signInWithPassword({email:$("#email").value.trim(), password:$("#pass").value});
+  if(error) $("#authErr").textContent = translate(error.message);
+};
+$("#btnSignup").onclick = async () => {
+  $("#authErr").textContent="";
+  if($("#nameField").classList.contains("hide")){
+    $("#nameField").classList.remove("hide");
+    $("#authErr").textContent="Zadaj meno a klikni Registrovať znova.";
+    return;
+  }
+  const name=$("#dispName").value.trim();
+  const {data,error} = await sb.auth.signUp({email:$("#email").value.trim(), password:$("#pass").value});
+  if(error){$("#authErr").textContent=translate(error.message);return;}
+  if(!data.session){$("#authErr").textContent="Účet vytvorený. Ak treba, potvrď e-mail a prihlás sa.";return;}
+  await afterLogin(name);
+};
+$("#btnLogout").onclick = async () => { await sb.auth.signOut(); location.reload(); };
+
+function translate(m){
+  if(/Invalid login/i.test(m)) return "Nesprávny e-mail alebo heslo.";
+  if(/already registered/i.test(m)) return "Tento e-mail už existuje — prihlás sa.";
+  if(/at least 6/i.test(m)) return "Heslo musí mať aspoň 6 znakov.";
+  return m;
+}
+
+sb.auth.onAuthStateChange((_e,session)=>{ if(session && !ME) afterLogin(); });
+
+async function afterLogin(name){
+  const {data,error} = await sb.rpc("ensure_player",{p_name:name||null});
+  if(error){$("#authErr").textContent="Chyba profilu: "+error.message;return;}
+  ME = Array.isArray(data)?data[0]:data;
+  $("#login").classList.add("hide");
+  $("#app").classList.remove("hide");
+  $("#nav").classList.remove("hide");
+  $("#whoami").textContent = ME.name + (ME.is_admin?" · admin":"");
+  if(ME.is_admin){ $("#adminTab").classList.remove("hide"); }
+  await refresh();
+}
+
+async function refresh(){
+  await Promise.all([loadMe(), loadMatches(), loadBoard(), loadAgents()]);
+}
+async function loadMe(){
+  const {data} = await sb.from("players").select("*").eq("id",ME.id).single();
+  if(data){ME=data; $("#myBal").textContent=fmt(ME.balance);}
+}
+
+/* ---------- ZÁPASY ---------- */
+async function loadMatches(){
+  const {data} = await sb.from("matches").select("*").order("commence_time");
+  MATCHES = (data||[]).filter(m=>m.status!=="finished");
+  renderMatches();
+}
+function betOpen(m){ return m.status==="upcoming" && new Date(m.commence_time) > new Date(); }
+function renderMatches(){
+  if(!MATCHES.length){ $("#matchList").innerHTML='<p class="muted">Zatiaľ žiadne zápasy. '+(ME.is_admin?"Pridaj ich v Admin.":"Čoskoro.")+'</p>'; return; }
+  $("#matchList").innerHTML = MATCHES.map(m=>{
+    const open=betOpen(m), t=new Date(m.commence_time);
+    const when=t.toLocaleString("sk-SK",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+    const sel=SEL[m.id];
+    const btn=(k,key,lbl)=> k==null?"":
+      `<button data-m="${m.id}" data-s="${key}" class="${sel===key?'sel':''}" ${open?'':'disabled'}>
+         <span>${lbl}</span><span class="k">${(+k).toFixed(2)}</span></button>`;
+    const odds = `<div class="odds">
+        ${btn(m.odds_home,'home','1')}
+        ${m.has_draw?btn(m.odds_draw,'draw','X'):''}
+        ${btn(m.odds_away,'away','2')}</div>`;
+    const stake = `<div class="stakebar ${sel?'show':''}" data-sb="${m.id}">
+        <input class="grow" type="number" min="1" placeholder="Vklad (body)" data-stake="${m.id}">
+        <button data-place="${m.id}">Vsadiť</button></div>`;
+    return `<div class="match">
+        <div class="lg">${m.league||m.sport} · ${when}</div>
+        <div class="teams">${m.home} <span class="muted">vs</span> ${m.away}</div>
+        ${odds}
+        ${open?stake:'<div class="closed">Stávkovanie uzavreté (po výkope)</div>'}
+      </div>`;
+  }).join("");
+  // handlers
+  $("#matchList").querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{
+    SEL[b.dataset.m]=b.dataset.s; renderMatches();
+  });
+  $("#matchList").querySelectorAll("[data-place]").forEach(b=>b.onclick=()=>placeBet(b.dataset.place));
+}
+async function placeBet(mid){
+  const sel=SEL[mid];
+  const stake=+($(`[data-stake="${mid}"]`).value);
+  if(!sel) return toast("Vyber tip (1/X/2).");
+  if(!stake||stake<1) return toast("Zadaj vklad.");
+  if(stake>ME.balance) return toast("Málo bodov.");
+  const {error} = await sb.rpc("place_bet",{p_match:mid,p_selection:sel,p_stake:stake});
+  if(error){ toast(betErr(error.message)); return; }
+  delete SEL[mid];
+  toast("Tip prijatý ✔ (kurz zamknutý)");
+  await Promise.all([loadMe(), loadMatches(), loadBoard()]);
+}
+function betErr(m){
+  const map={betting_closed:"Stávkovanie je uzavreté.",insufficient_balance:"Málo bodov.",
+    no_odds_for_selection:"Kurz nie je dostupný.",bad_stake:"Neplatný vklad."};
+  for(const k in map) if(m.includes(k)) return map[k];
+  return "Chyba: "+m;
+}
+
+/* ---------- REBRÍČEK ---------- */
+async function loadBoard(){
+  const {data} = await sb.from("players").select("*").order("balance",{ascending:false});
+  const rows=(data||[]);
+  $("#board").innerHTML = rows.map((p,i)=>{
+    const pct=Math.min(100, p.balance/500);   // /50000*100
+    return `<div class="lead">
+        <div class="rank">${i+1}</div>
+        <div class="grow">
+          <div class="row" style="gap:7px">
+            <b>${p.name}</b>
+            ${p.is_ai?'<span class="pill ai">AI</span>':''}
+            ${p.id===ME.id?'<span class="pill">ty</span>':''}
+          </div>
+          <div class="bar"><i style="width:${pct}%"></i></div>
+        </div>
+        <div class="bal">${fmt(p.balance)}</div>
+      </div>`;
+  }).join("");
+}
+
+/* ---------- AI AGENTI ---------- */
+async function loadAgents(){
+  const {data:ags} = await sb.from("players").select("*").eq("is_ai",true).order("balance",{ascending:false});
+  const {data:bets} = await sb.from("bets").select("*, matches(home,away)").order("placed_at",{ascending:false});
+  const byAgent={}; (bets||[]).forEach(b=>{(byAgent[b.player_id]=byAgent[b.player_id]||[]).push(b);});
+  $("#agents").innerHTML = (ags||[]).map(a=>{
+    const tips=(byAgent[a.id]||[]).slice(0,3).map(b=>{
+      const m=b.matches||{}; const pick={home:m.home,draw:"Remíza",away:m.away}[b.selection];
+      const st={won:"✅",lost:"❌",open:"⏳"}[b.status]||"";
+      return `<div class="tip"><b>${pick}</b> @ ${(+b.locked_odds).toFixed(2)} · ${fmt(b.stake)}b ${st}${b.rationale?'<br>'+b.rationale:''}</div>`;
+    }).join("") || '<div class="muted" style="font-size:13px">Zatiaľ bez tipu.</div>';
+    return `<div class="card agent">
+        <div class="row"><div class="grow"><h3>${AGENT_ICON[a.strategy]||"🤖"} ${a.name}</h3>
+          <div class="muted">${a.tagline||""}</div></div>
+          <div class="bal">${fmt(a.balance)}</div></div>
+        ${tips}
+      </div>`;
+  }).join("");
+}
+
+/* ---------- ADMIN ---------- */
+$("#a_sport").onchange=e=>{ $("#a_drawWrap").style.display = e.target.value==="soccer"?"":"none"; };
+$("#btnAddMatch").onclick = async () => {
+  $("#adminErr").textContent="";
+  const sport=$("#a_sport").value, hasDraw=sport==="soccer";
+  const rec={sport, league:$("#a_league").value.trim(), home:$("#a_home").value.trim(), away:$("#a_away").value.trim(),
+    commence_time:new Date($("#a_time").value).toISOString(), has_draw:hasDraw,
+    odds_home:+$("#a_oh").value||null, odds_draw:hasDraw?(+$("#a_od").value||null):null, odds_away:+$("#a_oa").value||null,
+    odds_updated_at:new Date().toISOString(), status:"upcoming"};
+  if(!rec.home||!rec.away||!$("#a_time").value){ $("#adminErr").textContent="Vyplň tímy a výkop."; return; }
+  const {error} = await sb.from("matches").insert(rec);
+  if(error){ $("#adminErr").textContent=error.message; return; }
+  ["a_league","a_home","a_away","a_oh","a_od","a_oa"].forEach(id=>$("#"+id).value="");
+  toast("Zápas pridaný ✔"); await loadMatches();
+};
+
+/* ---------- TABS ---------- */
+document.querySelectorAll(".tabbtn").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".tabbtn").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");
+  ["matches","board","agents","admin"].forEach(t=>$("#tab-"+t).classList.toggle("hide", t!==b.dataset.tab));
+  if(b.dataset.tab==="board") loadBoard();
+  if(b.dataset.tab==="agents") loadAgents();
+});
+</script>
+</body>
+</html>
