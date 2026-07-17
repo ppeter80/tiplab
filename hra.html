@@ -72,6 +72,7 @@
 </head>
 <body>
 <div class="wrap">
+  <div id="loading" style="text-align:center;padding:60px 20px;color:#8b95a3">Načítavam Tipovačku…</div>
 
   <!-- ===================== LOGIN (fallback; prihlásenie beží na gate.html) ===================== -->
   <div id="login" class="hide">
@@ -202,9 +203,17 @@ function translate(m){
   return m;
 }
 
-sb.auth.onAuthStateChange((_e,session)=>{ if(session && !ME) afterLogin(PENDING_NAME); });
-// prihlásenie beží na gate.html — ak sem prídeš bez session, pošli späť na bránu
-sb.auth.getSession().then(({data})=>{ if(!data.session) location.replace('gate.html'); });
+let AUTHED=false;
+sb.auth.onAuthStateChange((_e,session)=>{
+  if(session){ AUTHED=true; if(!ME) afterLogin(PENDING_NAME); }
+});
+// daj session čas sa obnoviť; na bránu pošli len ak po chvíli naozaj nič nie je
+setTimeout(async ()=>{
+  if(AUTHED||ME) return;
+  const {data}=await sb.auth.getSession();
+  if(data.session){ AUTHED=true; if(!ME) afterLogin(PENDING_NAME); }
+  else location.replace('gate.html');
+}, 2000);
 
 async function afterLogin(name){
   if(!name){
@@ -215,6 +224,7 @@ async function afterLogin(name){
   const {data,error} = await sb.rpc("ensure_player",{p_name:name||null});
   if(error){ location.replace('gate.html'); return; }
   ME = Array.isArray(data)?data[0]:data;
+  const l=$("#loading"); if(l) l.classList.add("hide");
   $("#login").classList.add("hide");
   $("#app").classList.remove("hide");
   $("#nav").classList.remove("hide");
