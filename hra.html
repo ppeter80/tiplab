@@ -14,6 +14,16 @@
   body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.45 -apple-system,Segoe UI,Roboto,system-ui,sans-serif;padding-bottom:70px}
   a{color:var(--accent)}
   .wrap{max-width:640px;margin:0 auto;padding:14px}
+  .topnav{display:flex;gap:13px;align-items:center;overflow-x:auto;white-space:nowrap;
+     border-bottom:1px solid var(--line);padding:6px 0 10px;margin-bottom:12px;font-size:13px}
+  .topnav::-webkit-scrollbar{display:none}
+  .topnav a{color:var(--dim);text-decoration:none}
+  .topnav a.cur{color:var(--accent);font-weight:700}
+  .topnav .tn-brand{color:var(--txt);font-weight:800;font-size:15px}
+  .topnav .tn-brand b{color:var(--accent)}
+  .topnav .tn-user{margin-left:auto;color:var(--dim);display:flex;gap:6px;align-items:center}
+  .topnav .tn-user #uName{color:var(--txt);font-weight:600}
+  .topnav .tn-user a{color:var(--accent);font-weight:600}
   h1{font-size:22px;margin:2px 0 2px;letter-spacing:.5px}
   h1 b{color:var(--accent)}
   .muted{color:var(--dim);font-size:13px}
@@ -79,7 +89,16 @@
 
   <!-- ===================== APP ===================== -->
   <div id="app" class="hide">
-    <a href="index.html" style="display:inline-block;color:var(--dim);text-decoration:none;font-size:13px;margin-bottom:8px">← Späť na web</a>
+    <div class="topnav">
+      <a class="tn-brand" href="index.html">Tip<b>lab</b></a>
+      <a href="index.html">Domov</a>
+      <a href="tipy.html">Tipy</a>
+      <a href="hra.html" class="cur">Tipovačka</a>
+      <a href="nastroje.html">Nástroje</a>
+      <a href="sprievodcovia.html">Sprievodcovia</a>
+      <a href="stavkovne.html">Stávkovne</a>
+      <span class="tn-user"><span id="uName"></span> <a href="#" id="uLogout">Odhlásiť</a></span>
+    </div>
     <div class="row">
       <div class="grow">
         <h1>Tip<b>lab</b> <span style="font-size:13px;color:var(--dim);font-weight:400">· Tipovačka</span></h1>
@@ -174,6 +193,7 @@ $("#btnLogout").onclick = async () => {
   localStorage.removeItem('tiplab_ok');
   location.replace('gate.html');
 };
+$("#uLogout").onclick = (e)=>{ e.preventDefault(); $("#btnLogout").click(); };
 
 function translate(m){
   if(/[Aa]nonymous.*disabled/.test(m) || /signups?.*disabled/i.test(m))
@@ -199,6 +219,7 @@ async function afterLogin(name){
   $("#app").classList.remove("hide");
   $("#nav").classList.remove("hide");
   $("#whoami").textContent = ME.name + (ME.is_admin?" · admin":"");
+  $("#uName").textContent = "👤 "+ME.name;
   if(ME.is_admin){ $("#adminTab").classList.remove("hide"); }
   await refresh();
 }

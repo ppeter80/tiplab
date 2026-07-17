@@ -82,8 +82,15 @@ function enterSite(session){
   localStorage.setItem("tiplab_ok","1");
   location.replace("index.html");
 }
-// už prihlásený (aj po Google redirecte) -> na web
-sb.auth.getSession().then(({data})=>{ if(data.session) enterSite(data.session); });
+// odhlásenie z webu: gate.html?logout=1
+if(location.search.indexOf('logout')>-1){
+  localStorage.removeItem('tiplab_ok'); localStorage.removeItem('tiplab_name');
+  sb.auth.signOut();
+  history.replaceState(null,'',location.pathname);
+} else {
+  // už prihlásený (aj po Google redirecte) -> na web
+  sb.auth.getSession().then(({data})=>{ if(data.session) enterSite(data.session); });
+}
 
 function setMode(m){
   mode=m;
