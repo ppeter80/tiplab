@@ -227,6 +227,8 @@ async function afterLogin(name){
   const {data,error} = await sb.rpc("ensure_player",{p_name:name||null});
   if(error){ location.replace('gate.html'); return; }
   ME = Array.isArray(data)?data[0]:data;
+  localStorage.setItem('tiplab_ok','1');
+  if(ME.name) localStorage.setItem('tiplab_name', ME.name);
   const l=$("#loading"); if(l) l.classList.add("hide");
   $("#login").classList.add("hide");
   $("#app").classList.remove("hide");
